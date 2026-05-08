@@ -698,6 +698,9 @@
             ${openTag}
             ${keywords.map(k => `<span class="tag">${k}</span>`).join('')}
           </div>
+          <div style="text-align:right; margin-top:8px;">
+            <span style="font-size:11px; color:var(--ink-faint);">지도에서 보기 →</span>
+          </div>
         `;
         card.onclick = () => window.open(url, '_blank');
         container.appendChild(card);
