@@ -2,18 +2,19 @@
  * api/search.js
  * 카페 검색 API
  * - Google Places API (searchText)로 카페 검색
- * - Upstash Redis로 공유 캐시 (5분 TTL)
- * - locationRestriction으로 반경 제한, 결과 없으면 자동 확장
+ * - Upstash Redis 공유 캐시 (24시간 TTL)
+ * - 검색할 때마다 키워드 카운터 자동 증가
+ * - locationRestriction(rectangle)으로 반경 제한, 결과 없으면 자동 확장
  */
 
 // ─────────────────────────────────────────────
-// RedisCache: Upstash REST API를 감싸는 캐시 클래스
+// RedisCache: Upstash REST API를 감싸는 캐시/카운터 클래스
 // ─────────────────────────────────────────────
 class RedisCache {
   constructor() {
-    this.url = process.env.UPSTASH_REDIS_REST_URL;
+    this.url   = process.env.UPSTASH_REDIS_REST_URL;
     this.token = process.env.UPSTASH_REDIS_REST_TOKEN;
-    this.ttl = 300; // 5분 (초 단위)
+    this.ttl   = 86400; // 24시간 (초 단위)
   }
 
   // Redis REST API 호출 헬퍼
