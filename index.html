@@ -33,24 +33,47 @@
       padding: 40px 16px 80px;
     }
 
-    header { text-align: center; margin-bottom: 36px; }
-
-    .logo {
-      font-family: 'Nanum Pen Script', cursive;
-      font-size: 42px;
-      color: var(--ink);
-      letter-spacing: 1px;
-      line-height: 1;
+    header {
+      text-align: center;
+      margin-bottom: 36px;
+      width: 100%;
+      max-width: 380px;
+      position: relative;
+      padding-top: 50px;
     }
 
+    .logo-img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+    }
+
+    .logo { font-family: 'Nanum Pen Script', cursive; font-size: 42px; color: var(--ink); letter-spacing: 1px; line-height: 1; }
     .logo span { color: var(--accent); }
+    .tagline { font-size: 13px; color: var(--ink-faint); margin-top: 4px; letter-spacing: 0.5px; }
 
-    .tagline {
-      font-size: 13px;
-      color: var(--ink-faint);
-      margin-top: 4px;
-      letter-spacing: 0.5px;
+    .header-btns {
+      position: absolute; top: 0; right: 0;
+      display: flex; gap: 8px; align-items: center;
     }
+
+    .icon-btn {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: #fdfaf4;
+      color: var(--ink-light);
+      font-size: 15px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s;
+      text-decoration: none;
+    }
+
+    .icon-btn:hover { background: var(--ink); color: #fdfaf4; border-color: var(--ink); }
 
     /* ── 메모지 카드 ── */
     .card {
@@ -67,382 +90,177 @@
     /* 노트 왼쪽 세로선 */
     .card::before {
       content: '';
-      position: absolute;
-      top: 0; left: 32px;
+      position: absolute; top: 0; left: 32px;
       width: 1px; height: 100%;
       background: rgba(192, 57, 43, 0.15);
     }
 
-    .section-title {
-      font-family: 'Nanum Pen Script', cursive;
-      font-size: 20px;
-      color: var(--ink);
-      margin-bottom: 12px;
-      padding-left: 20px;
-    }
+    .section-title { font-family: 'Nanum Pen Script', cursive; font-size: 20px; color: var(--ink); margin-bottom: 12px; padding-left: 20px; }
 
     /* ── 칩 영역 ── */
     .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 20px;
-      padding-left: 20px;
+      display: flex; flex-wrap: wrap; overflow-x: auto;
+      gap: 8px; margin-bottom: 20px; padding-left: 20px; padding-bottom: 4px;
+      scrollbar-width: none;
     }
+    .chips::-webkit-scrollbar { display: none; }
 
     .chip {
-      font-family: 'Nanum Pen Script', cursive;
-      font-size: 18px;
-      padding: 4px 14px;
-      border-radius: 20px;
-      border: 1.5px solid var(--line);
-      background: transparent;
-      color: var(--ink-light);
-      cursor: pointer;
-      transition: all 0.15s;
-      user-select: none;
-      line-height: 1.6;
-      display: flex;
-      align-items: center;
-      gap: 4px;
+      font-family: 'Nanum Pen Script', cursive; font-size: 18px;
+      padding: 4px 14px; border-radius: 20px;
+      border: 1.5px solid var(--line); background: transparent; color: var(--ink-light);
+      cursor: pointer; transition: all 0.15s; user-select: none;
+      line-height: 1.6; white-space: nowrap; flex-shrink: 0;
+      display: flex; align-items: center; gap: 4px;
     }
 
     .chip:hover { border-color: var(--ink-light); }
-
-    .chip.on {
-      background: var(--ink);
-      border-color: var(--ink);
-      color: #fdfaf4;
-    }
-
-    .chip.accent.on {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #fff;
-    }
-
+    .chip.on { background: var(--ink); border-color: var(--ink); color: #fdfaf4; }
+    .chip.accent.on { background: var(--accent); border-color: var(--accent); color: #fff; }
     /* 커스텀 칩 X 버튼 */
-    .chip-remove {
-      font-size: 12px;
-      opacity: 0.7;
-      cursor: pointer;
-      margin-left: 2px;
-    }
+    .chip-remove { font-size: 12px; opacity: 0.7; cursor: pointer; margin-left: 2px; }
 
     /* ── 직접 키워드 입력 ── */
     .keyword-input-row {
-      display: flex;
-      gap: 8px;
-      padding-left: 20px;
-      margin-bottom: 20px;
+      display: flex; gap: 8px;
+      padding-left: 20px; margin-bottom: 8px;
+      width: 100%; max-width: calc(100% - 20px);
     }
 
     .keyword-input {
-      flex: 1;
-      font-family: 'Nanum Pen Script', cursive;
-      font-size: 17px;
-      padding: 6px 12px;
-      border: 1.5px solid var(--line);
-      border-radius: 20px;
-      background: transparent;
-      color: var(--ink);
-      outline: none;
+      flex: 1 1 0; min-width: 0;
+      font-family: 'Nanum Pen Script', cursive; font-size: 17px;
+      padding: 6px 12px; border: 1.5px solid var(--line);
+      border-radius: 20px; background: transparent; color: var(--ink); outline: none;
     }
-
     .keyword-input::placeholder { color: var(--ink-faint); }
     .keyword-input:focus { border-color: var(--ink-light); }
 
     .keyword-add-btn {
-      font-family: 'Nanum Pen Script', cursive;
-      font-size: 16px;
-      padding: 6px 14px;
-      border-radius: 20px;
-      border: 1.5px solid var(--line);
-      background: transparent;
-      color: var(--ink-light);
-      cursor: pointer;
-      transition: all 0.15s;
-      white-space: nowrap;
+      flex-shrink: 0;
+      font-family: 'Nanum Pen Script', cursive; font-size: 16px;
+      padding: 6px 14px; border-radius: 20px;
+      border: 1.5px solid var(--line); background: transparent; color: var(--ink-light);
+      cursor: pointer; transition: all 0.15s; white-space: nowrap;
     }
+    .keyword-add-btn:hover { background: var(--ink); border-color: var(--ink); color: #fdfaf4; }
 
-    .keyword-add-btn:hover {
-      background: var(--ink);
-      border-color: var(--ink);
-      color: #fdfaf4;
-    }
+    .keyword-hint { font-size: 11px; color: var(--ink-faint); padding-left: 20px; margin-bottom: 16px; }
 
-    .divider {
-      border: none;
-      border-top: 1px dashed var(--line);
-      margin: 4px 0 20px;
-    }
+    .divider { border: none; border-top: 1px dashed var(--line); margin: 4px 0 20px; }
 
     .find-btn {
-      width: calc(100% - 20px);
-      margin-left: 20px;
-      padding: 14px;
-      font-family: 'Nanum Pen Script', cursive;
-      font-size: 22px;
-      background: var(--ink);
-      color: #fdfaf4;
-      border: none;
-      border-radius: 2px;
-      cursor: pointer;
-      letter-spacing: 1px;
-      transition: transform 0.1s, background 0.1s;
+      width: calc(100% - 20px); margin-left: 20px; padding: 14px;
+      font-family: 'Nanum Pen Script', cursive; font-size: 22px;
+      background: var(--ink); color: #fdfaf4;
+      border: none; border-radius: 2px; cursor: pointer;
+      letter-spacing: 1px; transition: transform 0.1s, background 0.1s;
     }
-
     .find-btn:active { transform: scale(0.98); }
     .find-btn:hover { background: #2c2520; }
 
     /* ── 로딩 ── */
-    .loading {
-      display: none;
-      text-align: center;
-      padding: 32px 0;
-      font-family: 'Nanum Pen Script', cursive;
-      font-size: 22px;
-      color: var(--ink-light);
-    }
-
+    .loading { display: none; text-align: center; padding: 32px 0; font-family: 'Nanum Pen Script', cursive; font-size: 22px; color: var(--ink-light); }
     .loading.show { display: block; }
 
     /* ── 정렬 바 ── */
-    .sort-bar {
-      display: none;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      max-width: 380px;
-      margin: 16px 0 8px;
-    }
-
+    .sort-bar { display: none; justify-content: space-between; align-items: center; width: 100%; max-width: 380px; margin: 16px 0 8px; }
     .sort-bar.show { display: flex; }
     .sort-btns { display: flex; gap: 8px; }
 
-    .sort-btn {
-      font-size: 12px;
-      padding: 4px 12px;
-      border-radius: 20px;
-      border: 1px solid var(--line);
-      background: transparent;
-      color: var(--ink-light);
-      cursor: pointer;
-      transition: all 0.15s;
-    }
+    .sort-btn { font-size: 12px; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--line); background: transparent; color: var(--ink-light); cursor: pointer; transition: all 0.15s; }
+    .sort-btn.on { background: var(--ink); border-color: var(--ink); color: #fdfaf4; }
 
-    .sort-btn.on {
-      background: var(--ink);
-      border-color: var(--ink);
-      color: #fdfaf4;
-    }
-
-    .feedback-link {
-      font-size: 12px;
-      color: var(--ink-faint);
-      cursor: pointer;
-      border-bottom: 1px dashed var(--line);
-      padding-bottom: 1px;
-      background: none;
-      border-top: none;
-      border-left: none;
-      border-right: none;
-      font-family: 'DM Sans', sans-serif;
-    }
-
+    .feedback-link { font-size: 12px; color: var(--ink-faint); cursor: pointer; border-bottom: 1px dashed var(--line); padding-bottom: 1px; background: none; border-top: none; border-left: none; border-right: none; font-family: 'DM Sans', sans-serif; }
     .feedback-link:hover { color: var(--ink-light); }
 
     /* ── 반경 확장 안내 메시지 ── */
-    .expand-notice {
-      display: none;
-      font-size: 12px;
-      color: var(--ink-faint);
-      text-align: center;
-      margin-bottom: 8px;
-      font-style: italic;
-    }
-
+    .expand-notice { display: none; font-size: 12px; color: var(--ink-faint); text-align: center; margin-bottom: 8px; font-style: italic; }
     .expand-notice.show { display: block; }
 
     /* ── 결과 카드 ── */
-    .results {
-      width: 100%;
-      max-width: 380px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+    .results { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 12px; }
 
-    .result-card {
-      background: #fdfaf4;
-      border: 1px solid var(--line);
-      border-radius: 2px;
-      padding: 16px 18px;
-      box-shadow: 2px 3px 0 var(--cream-dark);
-      cursor: pointer;
-      transition: transform 0.1s;
-      animation: fadeUp 0.3s ease both;
-    }
-
+    .result-card { background: #fdfaf4; border: 1px solid var(--line); border-radius: 2px; padding: 16px 18px; box-shadow: 2px 3px 0 var(--cream-dark); cursor: pointer; transition: transform 0.1s; animation: fadeUp 0.3s ease both; }
     .result-card:hover { transform: translateY(-2px); }
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-    .result-name {
-      font-family: 'Nanum Pen Script', cursive;
-      font-size: 20px;
-      color: var(--ink);
-      margin-bottom: 4px;
-    }
-
-    .result-meta {
-      font-size: 12px;
-      color: var(--ink-faint);
-      margin-bottom: 8px;
-    }
-
+    .result-name { font-family: 'Nanum Pen Script', cursive; font-size: 20px; color: var(--ink); margin-bottom: 4px; }
+    .result-meta { font-size: 12px; color: var(--ink-faint); margin-bottom: 8px; }
     .result-tags { display: flex; flex-wrap: wrap; gap: 6px; }
 
-    .tag {
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 10px;
-      background: var(--cream-dark);
-      color: var(--ink-light);
-    }
+    .tag { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: var(--cream-dark); color: var(--ink-light); }
+    .tag.open   { background: var(--green-bg); color: var(--green); }
+    .tag.closed { background: var(--red-bg);   color: var(--red); }
+    .map-hint { text-align: right; margin-top: 8px; font-size: 11px; color: var(--ink-faint); }
 
-    .tag.open  { background: var(--green-bg); color: var(--green); }
-    .tag.closed { background: var(--red-bg);  color: var(--red); }
-
-    .no-result {
-      text-align: center;
-      font-family: 'Nanum Pen Script', cursive;
-      font-size: 22px;
-      color: var(--ink-faint);
-      padding: 32px 0;
-    }
-
-    .error-msg {
-      display: none;
-      font-size: 13px;
-      color: var(--accent);
-      text-align: center;
-      margin-top: 8px;
-      padding-left: 20px;
-    }
-
+    .no-result { text-align: center; font-family: 'Nanum Pen Script', cursive; font-size: 22px; color: var(--ink-faint); padding: 32px 0; }
+    .error-msg { display: none; font-size: 13px; color: var(--accent); text-align: center; margin-top: 8px; padding-left: 20px; }
     .error-msg.show { display: block; }
 
-    /* ── 피드백 모달 ── */
-    .modal-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(30,26,22,0.4);
-      z-index: 100;
-      align-items: center;
-      justify-content: center;
-    }
-
+    /* ── 공통 모달 ── */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(30,26,22,0.45); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
     .modal-overlay.show { display: flex; }
 
-    .modal {
-      background: #fdfaf4;
-      border: 1px solid var(--line);
-      border-radius: 2px;
-      padding: 28px 24px;
-      width: 90%;
-      max-width: 340px;
-      box-shadow: 4px 6px 0 var(--line);
-      position: relative;
-    }
+    .modal { background: #fdfaf4; border: 1px solid var(--line); border-radius: 2px; padding: 28px 24px; width: 100%; max-width: 340px; box-shadow: 4px 6px 0 var(--line); position: relative; max-height: 80vh; overflow-y: auto; }
 
-    .modal-title {
-      font-family: 'Nanum Pen Script', cursive;
-      font-size: 24px;
-      color: var(--ink);
-      margin-bottom: 20px;
-    }
+    .modal-title { font-family: 'Nanum Pen Script', cursive; font-size: 24px; color: var(--ink); margin-bottom: 16px; }
+    .modal-close { position: absolute; top: 12px; right: 16px; font-size: 18px; color: var(--ink-faint); cursor: pointer; background: none; border: none; font-family: 'DM Sans', sans-serif; }
 
-    .modal-close {
-      position: absolute;
-      top: 12px; right: 16px;
-      font-size: 20px;
-      color: var(--ink-faint);
-      cursor: pointer;
-      background: none;
-      border: none;
-      font-family: 'DM Sans', sans-serif;
-    }
-
-    /* 별점 */
-    .star-row {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-
-    .star {
-      font-size: 28px;
-      cursor: pointer;
-      transition: transform 0.1s;
-      filter: grayscale(1);
-      opacity: 0.4;
-    }
-
+    /* 피드백 모달 */
+    .star-row { display: flex; gap: 8px; margin-bottom: 16px; }
+    .star { font-size: 28px; cursor: pointer; transition: transform 0.1s; filter: grayscale(1); opacity: 0.4; }
     .star.on { filter: grayscale(0); opacity: 1; }
     .star:hover { transform: scale(1.2); }
-
-    .modal-label {
-      font-family: 'Nanum Pen Script', cursive;
-      font-size: 18px;
-      color: var(--ink-light);
-      margin-bottom: 8px;
-      display: block;
-    }
-
-    .modal-textarea {
-      width: 100%;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
-      padding: 10px 12px;
-      border: 1.5px solid var(--line);
-      border-radius: 4px;
-      background: var(--cream);
-      color: var(--ink);
-      resize: none;
-      outline: none;
-      margin-bottom: 16px;
-      height: 80px;
-    }
-
+    .modal-label { font-family: 'Nanum Pen Script', cursive; font-size: 18px; color: var(--ink-light); margin-bottom: 8px; display: block; }
+    .modal-textarea { width: 100%; font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 10px 12px; border: 1.5px solid var(--line); border-radius: 4px; background: var(--cream); color: var(--ink); resize: none; outline: none; margin-bottom: 16px; height: 80px; }
     .modal-textarea:focus { border-color: var(--ink-light); }
-
-    .modal-submit {
-      width: 100%;
-      padding: 12px;
-      font-family: 'Nanum Pen Script', cursive;
-      font-size: 20px;
-      background: var(--ink);
-      color: #fdfaf4;
-      border: none;
-      border-radius: 2px;
-      cursor: pointer;
-      transition: background 0.1s;
-    }
-
+    .modal-submit { width: 100%; padding: 12px; font-family: 'Nanum Pen Script', cursive; font-size: 20px; background: var(--ink); color: #fdfaf4; border: none; border-radius: 2px; cursor: pointer; transition: background 0.1s; }
     .modal-submit:hover { background: #2c2520; }
     .modal-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* (i) 안내 모달 */
+    .info-section { margin-bottom: 16px; }
+    .info-section-title { font-family: 'Nanum Pen Script', cursive; font-size: 18px; color: var(--ink); margin-bottom: 6px; }
+    .info-item { font-size: 13px; color: var(--ink-light); line-height: 1.7; padding-left: 4px; }
+
+    /* 개발자 노트 모달 */
+    .release-list { display: flex; flex-direction: column; gap: 16px; }
+    .release-note { background: var(--cream); border: 1px solid var(--line); border-radius: 2px; padding: 14px 16px; position: relative; box-shadow: 2px 3px 0 var(--cream-dark); }
+    .release-note:nth-child(1) { transform: rotate(-0.5deg); }
+    .release-note:nth-child(2) { transform: rotate(0.3deg); }
+    .release-note:nth-child(3) { transform: rotate(-0.2deg); }
+    .release-version { font-family: 'Nanum Pen Script', cursive; font-size: 20px; color: var(--accent); margin-bottom: 8px; }
+    .release-date { font-size: 0.8rem; opacity: 0.7; }
+    .release-item { font-size: 13px; color: var(--ink-light); line-height: 1.8; padding-left: 4px; }
+    .release-item::before { content: '— '; color: var(--ink-faint); }
+    
+    .footer {
+      margin-top: 40px;
+      font-size: 11px;
+      color: var(--ink-faint);
+      text-align: center;
+      opacity: 0.7;
+    }
+
+    .footer a {
+      color: inherit;
+      text-decoration: none;
+    }
   </style>
 </head>
 <body>
 
   <header>
+    <img src="/images/wanderland-logo.png" class="logo-img" alt="Wanderland 로고">
     <div class="logo">Wander<span>land</span></div>
     <p class="tagline">오늘 카페 어디가지?</p>
+    <div class="header-btns">
+      <button class="icon-btn" onclick="openModal('info-modal')" title="앱 안내">ℹ</button>
+      <button class="icon-btn" onclick="openModal('devnote-modal')" title="개발자 노트">📋</button>
+      <a class="icon-btn" href="/dashboard.html" title="대시보드">📊</a>
+    </div>
   </header>
 
   <div class="card">
@@ -473,16 +291,10 @@
     <!-- 섹션 3: 직접 키워드 입력 → 칩으로 추가 -->
     <p class="section-title">🔍 직접 추가</p>
     <div class="keyword-input-row">
-      <input
-        class="keyword-input"
-        id="keyword-input"
-        type="text"
-        placeholder="두쫀쿠, 우베, 흑당..."
-        maxlength="20"
-      >
+      <input class="keyword-input" id="keyword-input" type="text" placeholder="두쫀쿠, 우베..." maxlength="20">
       <button class="keyword-add-btn" onclick="addCustomChip()">+ 추가</button>
     </div>
-    <!-- 사용자가 추가한 커스텀 칩들이 여기 들어감 -->
+    <p class="keyword-hint">엔터로도 추가할 수 있어요</p>
     <div class="chips" id="custom-chips"></div>
 
     <hr class="divider">
@@ -498,21 +310,40 @@
       <button class="sort-btn on" id="sort-distance" onclick="sortBy('distance')">가까운 순</button>
       <button class="sort-btn"    id="sort-rating"   onclick="sortBy('rating')">리뷰 순</button>
     </div>
-    <button class="feedback-link" onclick="openFeedback()">피드백 남기기 ✏️</button>
+    <button class="feedback-link" onclick="openModal('feedback-modal')">피드백 남기기 ✏️</button>
   </div>
 
   <!-- 반경 확장 안내 -->
   <p class="expand-notice" id="expand-notice"></p>
-
   <div class="results" id="results"></div>
 
-  <!-- 피드백 모달 -->
-  <div class="modal-overlay" id="modal-overlay">
+  <!-- (i) 앱 안내 모달 — 내용은 API에서 동적으로 채움 -->
+  <div class="modal-overlay" id="info-modal">
     <div class="modal">
-      <button class="modal-close" onclick="closeFeedback()">✕</button>
-      <p class="modal-title">어떠셨어요? 🗒</p>
+      <button class="modal-close" onclick="closeModal('info-modal')">✕</button>
+      <p class="modal-title">Wanderland 안내 ℹ</p>
+      <div id="info-content">
+        <p class="info-item" style="color:var(--ink-faint)">불러오는 중...</p>
+      </div>
+    </div>
+  </div>
 
-      <!-- 별점 -->
+  <!-- 개발자 노트 모달 — 내용은 API에서 동적으로 채움 -->
+  <div class="modal-overlay" id="devnote-modal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('devnote-modal')">✕</button>
+      <p class="modal-title">개발자 노트 📋</p>
+      <div class="release-list" id="devnote-content">
+        <p class="release-item" style="color:var(--ink-faint)">불러오는 중...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 피드백 모달 -->
+  <div class="modal-overlay" id="feedback-modal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('feedback-modal')">✕</button>
+      <p class="modal-title">어떠셨어요? 🗒</p>
       <span class="modal-label">별점</span>
       <div class="star-row" id="star-row">
         <span class="star" data-v="1">⭐</span>
@@ -521,11 +352,8 @@
         <span class="star" data-v="4">⭐</span>
         <span class="star" data-v="5">⭐</span>
       </div>
-
-      <!-- 자유 코멘트 -->
       <span class="modal-label">한 마디 (선택)</span>
       <textarea class="modal-textarea" id="feedback-comment" placeholder="불편한 점, 원하는 기능, 뭐든요!"></textarea>
-
       <button class="modal-submit" id="modal-submit" onclick="submitFeedback()">제출할게요 →</button>
     </div>
   </div>
@@ -544,7 +372,74 @@
   };
 
   // ─────────────────────────────────────────────
-  // ChipManager: 칩 선택/추가/삭제 관리
+  // ContentLoader: content/ 폴더 데이터를 API로 가져와 모달에 렌더링
+  // ─────────────────────────────────────────────
+  const ContentLoader = {
+    // 앱 안내 (i) 모달 채우기
+    async loadInfo() {
+      const res  = await fetch('/api/content?type=info');
+      const data = await res.json();
+
+      document.getElementById('info-content').innerHTML =
+        data.sections.map(s => `
+          <div class="info-section">
+            <p class="info-section-title">${s.title}</p>
+            <p class="info-item">${s.body}</p>
+          </div>
+        `).join('');
+    },
+
+    // 개발자 노트 모달 채우기
+    async loadDevNotes() {
+      const res   = await fetch('/api/content?type=devnotes');
+      const notes = await res.json();
+
+      document.getElementById('devnote-content').innerHTML =
+        notes.map((note, i) => `
+          <div class="release-note" style="transform: rotate(${['-0.5deg','0.3deg','-0.2deg'][i % 3]})">
+            <p class="release-version">${note.version}${note.label ? ` — ${note.label}` : ''}
+              <span class="release-date">${note.date ?? ''}</span>
+            </p>
+            ${note.items.map(item => `<p class="release-item">${item}</p>`).join('')}
+          </div>
+        `).join('');
+    }
+  };
+
+  // ─────────────────────────────────────────────
+  // ModalManager
+  // ─────────────────────────────────────────────
+  function openModal(id) {
+    document.getElementById(id).classList.add('show');
+
+    // 모달 열릴 때 콘텐츠 로드 (최초 1회)
+    if (id === 'info-modal' && !ContentLoader._infoLoaded) {
+      ContentLoader.loadInfo();
+      ContentLoader._infoLoaded = true;
+    }
+    if (id === 'devnote-modal' && !ContentLoader._devLoaded) {
+      ContentLoader.loadDevNotes();
+      ContentLoader._devLoaded = true;
+    }
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('show');
+    if (id === 'feedback-modal') {
+      state.feedbackRating = 0;
+      document.querySelectorAll('.star').forEach(s => s.classList.remove('on'));
+      document.getElementById('feedback-comment').value = '';
+    }
+  }
+
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', e => {
+      if (e.target === overlay) overlay.classList.remove('show');
+    });
+  });
+
+  // ─────────────────────────────────────────────
+  // ChipManager : 칩 선택/추가/삭제 관리
   // ─────────────────────────────────────────────
   const ChipManager = {
     // 기본 칩 토글 (on/off)
@@ -561,8 +456,7 @@
 
     // 선택된 칩의 data-value 배열 반환
     getSelected(groupId) {
-      return [...document.querySelectorAll(`#${groupId} .chip.on`)]
-        .map(c => c.dataset.value);
+      return [...document.querySelectorAll(`#${groupId} .chip.on`)].map(c => c.dataset.value);
     },
 
     // 커스텀 칩 추가 (입력창 → 칩으로 변환)
@@ -614,7 +508,7 @@
         Math.sin(dLng / 2) ** 2;
       return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
     },
-
+    
     // 거리를 보기 좋게 포맷 (1000m 이상은 km)
     format(meters) {
       return meters >= 1000
@@ -627,27 +521,15 @@
   // Sorter: 장소 정렬
   // ─────────────────────────────────────────────
   const Sorter = {
-    byDistance(places) {
-      return [...places].sort((a, b) => {
-        // location 없는 장소는 맨 뒤로 (Infinity)
-        const da = a.location
-          ? GeoUtils.distance(state.userLat, state.userLng, a.location.latitude, a.location.longitude)
-          : Infinity;
-        const db = b.location
-          ? GeoUtils.distance(state.userLat, state.userLng, b.location.latitude, b.location.longitude)
-          : Infinity;
-        return da - db;
-      });
-    },
-
-    byRating(places) {
-      return [...places].sort((a, b) =>
-        (parseFloat(b.rating) || 0) - (parseFloat(a.rating) || 0)
-      );
-    },
-
     sort(places, type) {
-      return type === 'rating' ? this.byRating(places) : this.byDistance(places);
+      return [...places].sort((a, b) => {
+        if (type === 'distance') {
+          const da = a.location ? GeoUtils.distance(state.userLat, state.userLng, a.location.latitude, a.location.longitude) : Infinity;
+          const db = b.location ? GeoUtils.distance(state.userLat, state.userLng, b.location.latitude, b.location.longitude) : Infinity;
+          return da - db;
+        }
+        return (parseFloat(b.rating) || 0) - (parseFloat(a.rating) || 0);
+      });
     }
   };
 
@@ -655,7 +537,7 @@
   // Renderer: 결과 카드 렌더링
   // ─────────────────────────────────────────────
   const Renderer = {
-    renderResults(places) {
+    render(places) {
       const container = document.getElementById('results');
       container.innerHTML = '';
 
@@ -669,24 +551,13 @@
       places.forEach((place, i) => {
         const name    = place.displayName?.text || '';
         const address = place.formattedAddress || '';
-        const rating  = place.rating
-          ? `⭐ ${place.rating.toFixed(1)} (${place.userRatingCount}개)`
-          : '';
-        const dist = place.location
-          ? GeoUtils.format(GeoUtils.distance(
-              state.userLat, state.userLng,
-              place.location.latitude, place.location.longitude
-            ))
-          : '';
-        const url  = place.googleMapsUri || '';
+        const rating  = place.rating ? `⭐ ${place.rating.toFixed(1)} (${place.userRatingCount}개)` : '';
+        const dist    = place.location ? GeoUtils.format(GeoUtils.distance(state.userLat, state.userLng, place.location.latitude, place.location.longitude)) : '';
+        const url     = place.googleMapsUri || '';
 
         // 영업 중/종료 태그
-        const isOpen = place.regularOpeningHours?.openNow;
-        const openTag = isOpen === true
-          ? '<span class="tag open">영업 중</span>'
-          : isOpen === false
-            ? '<span class="tag closed">영업 종료</span>'
-            : '';
+        const isOpen  = place.regularOpeningHours?.openNow;
+        const openTag = isOpen === true ? '<span class="tag open">영업 중</span>' : isOpen === false ? '<span class="tag closed">영업 종료</span>' : '';
 
         const card = document.createElement('div');
         card.className = 'result-card';
@@ -698,9 +569,7 @@
             ${openTag}
             ${keywords.map(k => `<span class="tag">${k}</span>`).join('')}
           </div>
-          <div style="text-align:right; margin-top:8px;">
-            <span style="font-size:11px; color:var(--ink-faint);">지도에서 보기 →</span>
-          </div>
+          <div class="map-hint">지도에서 보기 →</div>
         `;
         card.onclick = () => window.open(url, '_blank');
         container.appendChild(card);
@@ -717,10 +586,7 @@
     const errorEl = document.getElementById('error-msg');
     errorEl.classList.remove('show');
 
-    if (!navigator.geolocation) {
-      errorEl.classList.add('show');
-      return;
-    }
+    if (!navigator.geolocation) { errorEl.classList.add('show'); return; }
 
     document.getElementById('loading').classList.add('show');
     document.getElementById('results').innerHTML = '';
@@ -740,25 +606,23 @@
     );
   }
 
-  // API 호출
+  // API 호출하여 장소 데이터 가져오기
   async function fetchPlaces() {
     const keywords = ChipManager.getAllKeywords();
     const keyword  = keywords.length ? keywords.join(' ') + ' 카페' : '카페';
 
     try {
-      const res  = await fetch(
-        `/api/search?lat=${state.userLat}&lng=${state.userLng}&keyword=${encodeURIComponent(keyword)}`
-      );
+      const res  = await fetch(`/api/search?lat=${state.userLat}&lng=${state.userLng}&keyword=${encodeURIComponent(keyword)}`);
       const data = await res.json();
 
       document.getElementById('loading').classList.remove('show');
 
       if (data.places?.length) {
         state.places = data.places;
-        state.sort = 'distance';
+        state.sort   = 'distance';
 
         // 반경 확장 안내 메시지
-        if (data.expandedRadius && data.expandedRadius > 1000) {
+        if (data.expandedRadius && data.expandedRadius > 500) {
           const notice = document.getElementById('expand-notice');
           notice.textContent = `근처에 없어서 ${(data.expandedRadius / 1000).toFixed(1)}km 범위로 넓혀봤어요 🗺`;
           notice.classList.add('show');
@@ -767,7 +631,7 @@
         document.getElementById('sort-distance').classList.add('on');
         document.getElementById('sort-rating').classList.remove('on');
         document.getElementById('sort-bar').classList.add('show');
-        Renderer.renderResults(Sorter.sort(state.places, 'distance'));
+        Renderer.render(Sorter.sort(state.places, 'distance'));
       } else {
         document.getElementById('results').innerHTML = '<p class="no-result">근처에 카페가 없어요 😢</p>';
       }
@@ -782,29 +646,15 @@
     state.sort = type;
     document.getElementById('sort-distance').classList.toggle('on', type === 'distance');
     document.getElementById('sort-rating').classList.toggle('on', type === 'rating');
-    Renderer.renderResults(Sorter.sort(state.places, type));
+    Renderer.render(Sorter.sort(state.places, type));
   }
 
   // 커스텀 칩 추가 (버튼 클릭)
   function addCustomChip() { ChipManager.addCustom(); }
 
   // ─────────────────────────────────────────────
-  // 피드백 모달
+  // 피드백
   // ─────────────────────────────────────────────
-
-  function openFeedback() {
-    document.getElementById('modal-overlay').classList.add('show');
-  }
-
-  function closeFeedback() {
-    document.getElementById('modal-overlay').classList.remove('show');
-    // 별점 초기화
-    state.feedbackRating = 0;
-    document.querySelectorAll('.star').forEach(s => s.classList.remove('on'));
-    document.getElementById('feedback-comment').value = '';
-  }
-
-  // 별점 클릭
   document.querySelectorAll('.star').forEach(star => {
     star.addEventListener('click', () => {
       state.feedbackRating = parseInt(star.dataset.v);
@@ -816,10 +666,7 @@
 
   // 피드백 제출
   async function submitFeedback() {
-    if (!state.feedbackRating) {
-      alert('별점을 선택해줘요!');
-      return;
-    }
+    if (!state.feedbackRating) { alert('별점을 선택해줘요!'); return; }
 
     const btn = document.getElementById('modal-submit');
     btn.disabled = true;
@@ -829,15 +676,15 @@
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        rating: state.feedbackRating,
-        chips: ChipManager.getAllKeywords(),
+        rating:  state.feedbackRating,
+        chips:   ChipManager.getAllKeywords(),
         comment: document.getElementById('feedback-comment').value
       })
     });
 
     btn.textContent = '감사해요 🎉';
     setTimeout(() => {
-      closeFeedback();
+      closeModal('feedback-modal');
       btn.disabled = false;
       btn.textContent = '제출할게요 →';
     }, 1500);
@@ -849,4 +696,9 @@
   ChipManager.init();
 </script>
 </body>
+<footer class="footer">
+  <a href="https://www.flaticon.com/kr/free-icons/" target="_blank">
+    카페 아이콘 제작자: Freepik - Flaticon
+  </a>
+</footer>
 </html>
