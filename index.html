@@ -397,7 +397,7 @@
       document.getElementById('devnote-content').innerHTML =
         notes.map((note, i) => `
           <div class="release-note" style="transform: rotate(${['-0.5deg','0.3deg','-0.2deg'][i % 3]})">
-            <p class="release-version">${note.version}${note.label ? ` — ${note.label}` : ''}
+            <p class="release-version">${note.version}${i === 0 ? ' — NEW!' : ''}${note.label ? ` — ${note.label}` : ''}
               <span class="release-date">${note.date ?? ''}</span>
             </p>
             ${note.items.map(item => `<p class="release-item">${item}</p>`).join('')}
