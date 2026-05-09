@@ -176,7 +176,7 @@
       list.innerHTML = stats.slice(0, 10).map(({ keyword, count }) => `
         <div class="bar-item">
           <div class="bar-label">
-            <span>${keyword}</span>
+            <span>${keyword.replace(/ 카페$/, '')}</span>
             <span>${count}회</span>
           </div>
           <div class="bar-track">
