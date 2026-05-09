@@ -35,8 +35,15 @@ class RedisCache {
   // 캐시에 데이터 저장 (TTL 포함)
   async set(key, value) {
     const encoded = encodeURIComponent(key);
-    const data = encodeURIComponent(JSON.stringify(value));
+    const data    = encodeURIComponent(JSON.stringify(value));
     await this._call('set', encoded, data, 'EX', this.ttl);
+  }
+
+  // 키워드 검색 카운터 증가
+  // "keyword:카공 카페" 형태의 키로 카운트를 1씩 올림
+  async incrementKeyword(keyword) {
+    const key = encodeURIComponent(`keyword:${keyword}`);
+    await this._call('incr', key);
   }
 }
 
@@ -45,9 +52,9 @@ class RedisCache {
 // ─────────────────────────────────────────────
 class PlacesSearcher {
   constructor(apiKey) {
-    this.apiKey = apiKey;
+    this.apiKey   = apiKey;
     this.endpoint = 'https://places.googleapis.com/v1/places:searchText';
-    this.fields = [
+    this.fields   = [
       'places.displayName',
       'places.formattedAddress',
       'places.rating',
@@ -58,14 +65,18 @@ class PlacesSearcher {
     ].join(',');
   }
 
-  // 특정 반경으로 검색
+  // 특정 반경을 사각형(rectangle)으로 변환해서 검색
+  // locationRestriction은 circle 미지원 → rectangle로 근사
   async searchWithRadius(keyword, lat, lng, radiusMeters) {
+    // 위도 1도 ≈ 111km → 반경을 도(degree)로 변환
+    const delta = radiusMeters / 111000;
+
     const body = {
       textQuery: keyword,
-      locationBias: {
-        circle: {
-          center: { latitude: lat, longitude: lng },
-          radius: radiusMeters
+      locationRestriction: {
+        rectangle: {
+          low:  { latitude: lat - delta, longitude: lng - delta },
+          high: { latitude: lat + delta, longitude: lng + delta }
         }
       },
       maxResultCount: 20,
@@ -75,8 +86,8 @@ class PlacesSearcher {
     const res = await fetch(this.endpoint, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'X-Goog-Api-Key': this.apiKey,
+        'Content-Type':    'application/json',
+        'X-Goog-Api-Key':  this.apiKey,
         'X-Goog-FieldMask': this.fields
       },
       body: JSON.stringify(body)
@@ -84,9 +95,8 @@ class PlacesSearcher {
 
     const data = await res.json();
 
-    // location 없는 장소 필터링 (거리 계산에 필요)
-    const places = (data.places || []).filter(p => p.location);
-    return places;
+    // location 없는 장소 필터링 (거리 계산에 location 필수)
+    return (data.places || []).filter(p => p.location);
   }
 
   // 반경을 단계적으로 늘려가며 결과 찾기
@@ -128,16 +138,19 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: '파라미터가 부족해요 (lat, lng, keyword 필요)' });
   }
 
-  const cache = new RedisCache();
+  const cache    = new RedisCache();
   const cacheKey = makeCacheKey(lat, lng, keyword);
 
-  // 1. 캐시 확인
-  const cached = await cache.get(cacheKey);
+  // 1. 키워드 카운터 증가 (캐시 히트와 무관하게 항상 카운트)
+  await cache.incrementKeyword(keyword).catch(() => {}); // 실패해도 검색은 계속
+
+  // 2. 캐시 확인
+  const cached = await cache.get(cacheKey).catch(() => null);
   if (cached) {
     return res.status(200).json({ ...cached, cached: true });
   }
 
-  // 2. 캐시 미스 → Google Places API 검색
+  // 3. 캐시 미스 → Google Places API 검색
   const searcher = new PlacesSearcher(process.env.GOOGLE_API_KEY);
   const { places, radius } = await searcher.searchWithAutoExpand(
     keyword,
@@ -147,9 +160,9 @@ export default async function handler(req, res) {
 
   const result = { places, expandedRadius: radius };
 
-  // 3. 결과 캐시에 저장
+  // 4. 결과 캐시에 저장
   if (places.length > 0) {
-    await cache.set(cacheKey, result);
+    await cache.set(cacheKey, result).catch(() => {});
   }
 
   return res.status(200).json(result);

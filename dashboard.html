@@ -32,155 +32,78 @@
 
     header { text-align: center; }
 
-    .logo {
-      font-family: 'Nanum Pen Script', cursive;
-      font-size: 36px;
-      color: var(--ink);
-    }
-
+    .logo { font-family: 'Nanum Pen Script', cursive; font-size: 36px; color: var(--ink); }
     .logo span { color: var(--accent); }
 
     .back-link {
-      font-size: 13px;
-      color: var(--ink-faint);
-      text-decoration: none;
-      border-bottom: 1px dashed var(--line);
-      margin-top: 6px;
-      display: inline-block;
+      font-size: 13px; color: var(--ink-faint);
+      text-decoration: none; border-bottom: 1px dashed var(--line);
+      margin-top: 6px; display: inline-block;
     }
 
-    /* ── 카드 공통 ── */
     .card {
       background: #fdfaf4;
       border: 1px solid var(--line);
       border-radius: 2px;
       padding: 24px;
-      width: 100%;
-      max-width: 380px;
+      width: 100%; max-width: 380px;
       box-shadow: 3px 4px 0 var(--cream-dark);
       position: relative;
     }
 
     .card::before {
       content: '';
-      position: absolute;
-      top: 0; left: 28px;
+      position: absolute; top: 0; left: 28px;
       width: 1px; height: 100%;
       background: rgba(192,57,43,0.12);
     }
 
     .card-title {
       font-family: 'Nanum Pen Script', cursive;
-      font-size: 22px;
-      color: var(--ink);
-      margin-bottom: 16px;
-      padding-left: 16px;
+      font-size: 22px; color: var(--ink);
+      margin-bottom: 16px; padding-left: 16px;
     }
 
     /* ── 총 피드백 + 평균 별점 ── */
-    .stat-row {
-      display: flex;
-      gap: 16px;
-      padding-left: 16px;
-    }
+    .stat-row { display: flex; gap: 16px; padding-left: 16px; }
 
     .stat-box {
-      flex: 1;
-      background: var(--cream);
-      border: 1px solid var(--line);
-      border-radius: 4px;
-      padding: 12px;
-      text-align: center;
+      flex: 1; background: var(--cream);
+      border: 1px solid var(--line); border-radius: 4px;
+      padding: 12px; text-align: center;
     }
 
-    .stat-value {
-      font-family: 'Nanum Pen Script', cursive;
-      font-size: 32px;
-      color: var(--ink);
-      line-height: 1.1;
+    .stat-value { font-family: 'Nanum Pen Script', cursive; font-size: 32px; color: var(--ink); line-height: 1.1; }
+    .stat-label { font-size: 11px; color: var(--ink-faint); margin-top: 4px; }
+
+    /* ── 키워드 통계 바 ── */
+    .bar-list { display: flex; flex-direction: column; gap: 10px; padding-left: 16px; }
+
+    .bar-item {}
+
+    .bar-label {
+      display: flex; justify-content: space-between;
+      font-size: 13px; color: var(--ink-light); margin-bottom: 4px;
     }
 
-    .stat-label {
-      font-size: 11px;
-      color: var(--ink-faint);
-      margin-top: 4px;
-    }
+    .bar-track { height: 8px; background: var(--cream-dark); border-radius: 4px; overflow: hidden; }
 
-    /* ── 칩 통계 바 ── */
-    .chip-bar-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      padding-left: 16px;
-    }
-
-    .chip-bar-item { }
-
-    .chip-bar-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 13px;
-      color: var(--ink-light);
-      margin-bottom: 4px;
-    }
-
-    .chip-bar-track {
-      height: 8px;
-      background: var(--cream-dark);
-      border-radius: 4px;
-      overflow: hidden;
-    }
-
-    .chip-bar-fill {
-      height: 100%;
-      background: var(--ink);
-      border-radius: 4px;
-      transition: width 0.6s ease;
-    }
+    .bar-fill { height: 100%; background: var(--ink); border-radius: 4px; transition: width 0.6s ease; }
 
     /* ── 최근 코멘트 ── */
-    .comment-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      padding-left: 16px;
-    }
+    .comment-list { display: flex; flex-direction: column; gap: 12px; padding-left: 16px; }
 
-    .comment-item {
-      border-left: 2px solid var(--line);
-      padding-left: 10px;
-    }
+    .comment-item { border-left: 2px solid var(--line); padding-left: 10px; }
+    .comment-rating { font-size: 12px; color: var(--ink-faint); margin-bottom: 2px; }
+    .comment-text  { font-size: 13px; color: var(--ink); line-height: 1.5; }
+    .comment-time  { font-size: 11px; color: var(--ink-faint); margin-top: 2px; }
 
-    .comment-rating {
-      font-size: 12px;
-      color: var(--ink-faint);
-      margin-bottom: 2px;
-    }
-
-    .comment-text {
-      font-size: 13px;
-      color: var(--ink);
-      line-height: 1.5;
-    }
-
-    .comment-time {
-      font-size: 11px;
-      color: var(--ink-faint);
-      margin-top: 2px;
-    }
-
-    .empty {
-      font-size: 13px;
-      color: var(--ink-faint);
-      padding-left: 16px;
-    }
+    .empty { font-size: 13px; color: var(--ink-faint); padding-left: 16px; }
 
     .loading-text {
       font-family: 'Nanum Pen Script', cursive;
-      font-size: 20px;
-      color: var(--ink-faint);
-      text-align: center;
-      padding: 40px 0;
+      font-size: 20px; color: var(--ink-faint);
+      text-align: center; padding: 40px 0;
     }
   </style>
 </head>
@@ -208,10 +131,10 @@
     </div>
   </div>
 
-  <!-- 칩 사용 통계 -->
-  <div class="card" id="card-chips" style="display:none">
-    <p class="card-title">🏷 많이 선택한 키워드</p>
-    <div class="chip-bar-list" id="chip-bar-list"></div>
+  <!-- 실제 검색 키워드 TOP (Redis 카운터) -->
+  <div class="card" id="card-keywords" style="display:none">
+    <p class="card-title">🔍 많이 검색한 키워드</p>
+    <div class="bar-list" id="keyword-bar-list"></div>
   </div>
 
   <!-- 최근 코멘트 -->
@@ -222,54 +145,52 @@
 
 <script>
   // ─────────────────────────────────────────────
-  // DashboardRenderer: 대시보드 UI 렌더링 클래스
+  // DashboardRenderer: 대시보드 UI 렌더링
   // ─────────────────────────────────────────────
   class DashboardRenderer {
     constructor(data) {
-      this.data = data; // { total, averageRating, chipStats, recentComments }
+      this.data = data;
+      // data: { total, averageRating, recentComments, keywordStats }
     }
 
-    // 전체 현황 카드
     renderSummary() {
       document.getElementById('total-count').textContent = this.data.total;
-      document.getElementById('avg-rating').textContent =
+      document.getElementById('avg-rating').textContent  =
         this.data.total > 0 ? `⭐ ${this.data.averageRating}` : '-';
       document.getElementById('card-summary').style.display = '';
     }
 
-    // 칩 사용 통계 바 차트
-    renderChipStats() {
-      const list = document.getElementById('chip-bar-list');
-      const stats = this.data.chipStats;
+    // Redis 키워드 카운터 기반 바 차트
+    renderKeywordStats() {
+      const list  = document.getElementById('keyword-bar-list');
+      const stats = this.data.keywordStats || [];
 
       if (!stats.length) {
-        list.innerHTML = '<p class="empty">아직 데이터가 없어요</p>';
-        document.getElementById('card-chips').style.display = '';
+        list.innerHTML = '<p class="empty">아직 검색 데이터가 없어요</p>';
+        document.getElementById('card-keywords').style.display = '';
         return;
       }
 
-      // 가장 많이 쓴 칩의 수 = 바 너비 100% 기준
-      const max = stats[0].count;
+      const max = stats[0].count; // 가장 많은 수 = 100% 기준
 
-      list.innerHTML = stats.slice(0, 8).map(({ chip, count }) => `
-        <div class="chip-bar-item">
-          <div class="chip-bar-label">
-            <span>${chip}</span>
+      list.innerHTML = stats.slice(0, 10).map(({ keyword, count }) => `
+        <div class="bar-item">
+          <div class="bar-label">
+            <span>${keyword}</span>
             <span>${count}회</span>
           </div>
-          <div class="chip-bar-track">
-            <div class="chip-bar-fill" style="width: ${(count / max * 100).toFixed(1)}%"></div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:${(count / max * 100).toFixed(1)}%"></div>
           </div>
         </div>
       `).join('');
 
-      document.getElementById('card-chips').style.display = '';
+      document.getElementById('card-keywords').style.display = '';
     }
 
-    // 최근 코멘트
     renderComments() {
-      const list = document.getElementById('comment-list');
-      const comments = this.data.recentComments;
+      const list     = document.getElementById('comment-list');
+      const comments = this.data.recentComments || [];
 
       if (!comments.length) {
         list.innerHTML = '<p class="empty">아직 코멘트가 없어요</p>';
@@ -288,26 +209,20 @@
       document.getElementById('card-comments').style.display = '';
     }
 
-    // 전체 렌더링
     render() {
       this.renderSummary();
-      this.renderChipStats();
+      this.renderKeywordStats();
       this.renderComments();
     }
   }
 
-  // ─────────────────────────────────────────────
-  // 데이터 로드 및 렌더링
-  // ─────────────────────────────────────────────
+  // 데이터 로드
   async function loadDashboard() {
     try {
       const res  = await fetch('/api/feedback-data');
       const data = await res.json();
-
       document.getElementById('loading-text').style.display = 'none';
-
-      const renderer = new DashboardRenderer(data);
-      renderer.render();
+      new DashboardRenderer(data).render();
     } catch {
       document.getElementById('loading-text').textContent = '데이터를 불러오지 못했어요 😢';
     }
