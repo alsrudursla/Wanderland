@@ -167,13 +167,33 @@
     .loading { display: none; text-align: center; padding: 32px 0; font-family: 'Nanum Pen Script', cursive; font-size: 22px; color: var(--ink-light); }
     .loading.show { display: block; }
 
+    /* 로딩 점 애니메이션 */
+    .loading-dots span {
+      display: inline-block;
+      animation: bounce 1.2s infinite;
+      font-size: 28px;
+    }
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+      40%           { transform: translateY(-8px); opacity: 1; }
+    }
+
     /* ── 정렬 바 ── */
-    .sort-bar { display: none; justify-content: space-between; align-items: center; width: 100%; max-width: 380px; margin: 16px 0 8px; }
+    .sort-bar { display: none; flex-direction: column; align-items: stretch; justify-content: flex-start; width: 100%; max-width: 380px; margin: 16px 0 8px; }
     .sort-bar.show { display: flex; }
-    .sort-btns { display: flex; gap: 8px; }
+    .sort-btns { display: flex; gap: 8px; margin-top: 8px; }
 
     .sort-btn { font-size: 12px; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--line); background: transparent; color: var(--ink-light); cursor: pointer; transition: all 0.15s; }
     .sort-btn.on { background: var(--ink); border-color: var(--ink); color: #fdfaf4; }
+
+    /* 구글 기반 정렬 버튼 */
+    .sort-btn.google-sort.on { background: #4285F4; border-color: #4285F4; color: #fff; }
+
+    /* 네이버 기반 정렬 버튼 */
+    .sort-btn.naver-sort.on { background: #03C75A; border-color: #03C75A; color: #fff; }
 
     .feedback-link { font-size: 12px; color: var(--ink-faint); cursor: pointer; border-bottom: 1px dashed var(--line); padding-bottom: 1px; background: none; border-top: none; border-left: none; border-right: none; font-family: 'DM Sans', sans-serif; }
     .feedback-link:hover { color: var(--ink-light); }
@@ -195,6 +215,8 @@
     .result-tags { display: flex; flex-wrap: wrap; gap: 6px; }
 
     .tag { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: var(--cream-dark); color: var(--ink-light); }
+    .tag.google { background-color: #4285F4; color: white; }
+    .tag.naver { background-color: #03C75A; color: white; }
     .tag.open   { background: var(--green-bg); color: var(--green); }
     .tag.closed { background: var(--red-bg);   color: var(--red); }
     .map-hint { text-align: right; margin-top: 8px; font-size: 11px; color: var(--ink-faint); }
@@ -261,6 +283,7 @@
     <div class="logo">Wander<span>land</span></div>
     <p class="tagline">오늘 카페 어디가지?</p>
     <div class="header-btns">
+      <button class="icon-btn" onclick="openModal('feedback-modal')" title="피드백">✏️</button>
       <button class="icon-btn" onclick="openModal('info-modal')" title="앱 안내">ℹ</button>
       <button class="icon-btn" onclick="openModal('devnote-modal')" title="개발자 노트">📋</button>
       <a class="icon-btn" href="/dashboard.html" title="대시보드">📊</a>
@@ -306,15 +329,30 @@
     <p class="error-msg" id="error-msg">위치 권한이 필요해요. 브라우저에서 허용해줘요!</p>
   </div>
 
-  <div class="loading" id="loading">헤매는 중... 🗺</div>
+  <div class="loading" id="loading">
+    <div class="loading-dots">
+      <span>☕</span><span>☕</span><span>☕</span>
+    </div>
+    <p style="margin-top:8px; font-family:'Nanum Pen Script',cursive; font-size:20px; color:var(--ink-light)">헤매는 중...</p>
+  </div>
 
   <!-- 정렬 바 + 피드백 버튼 -->
   <div class="sort-bar" id="sort-bar">
-    <div class="sort-btns">
-      <button class="sort-btn on" id="sort-distance" onclick="sortBy('distance')">가까운 순</button>
-      <button class="sort-btn"    id="sort-rating"   onclick="sortBy('rating')">리뷰 순</button>
+    <!-- 반경 넓히기 버튼 — 결과 있을 때만 표시 -->
+    <div id="expand-btn-row" style="display:none; width:100%; max-width:380px; margin-bottom:8px;">
+      <button onclick="expandSearch()" style="
+        width:100%; padding:10px;
+        font-family:'Nanum Pen Script',cursive; font-size:18px;
+        background:transparent; color:var(--ink-light);
+        border:1.5px dashed var(--line); border-radius:2px;
+        cursor:pointer; transition:all 0.15s;
+      ">반경 넓혀서 다시 찾아줘 →</button>
     </div>
-    <button class="feedback-link" onclick="openModal('feedback-modal')">피드백 남기기 ✏️</button>
+    <div class="sort-btns">
+      <button class="sort-btn google-sort on" id="sort-distance" onclick="sortBy('distance')">가까운 순</button>
+      <button class="sort-btn google-sort"    id="sort-rating"   onclick="sortBy('rating')">별점 순</button>
+      <button class="sort-btn naver-sort"     id="sort-trend"    onclick="sortBy('trend')">트렌드</button>
+    </div>
   </div>
 
   <!-- 반경 확장 안내 -->
@@ -367,12 +405,14 @@
   // 상태 (State)
   // ─────────────────────────────────────────────
   const state = {
-    places: [],          // 검색 결과
+    places: [],          // 구글 결과
+    trendPlaces: [],     // 네이버 결과 (트렌드용)
     sort: 'distance',    // 현재 정렬 기준
     userLat: null,       // 현재 위치 위도
     userLng: null,       // 현재 위치 경도
     customChips: [],     // 사용자가 직접 추가한 칩 목록
-    feedbackRating: 0    // 피드백 별점
+    feedbackRating: 0,   // 피드백 별점
+    currentRadius: 500,  // 현재 검색 반경 (m)
   };
 
   // ─────────────────────────────────────────────
@@ -532,7 +572,12 @@
           const db = b.location ? GeoUtils.distance(state.userLat, state.userLng, b.location.latitude, b.location.longitude) : Infinity;
           return da - db;
         }
-        return (parseFloat(b.rating) || 0) - (parseFloat(a.rating) || 0);
+        if (type === 'rating') {
+          return (parseFloat(b.rating) || 0) - (parseFloat(a.rating) || 0);
+        }
+        if (type === 'trend') {
+          return 0; // 정렬 필요 없음, 네이버 API 순서 그대로
+        }
       });
     }
   };
@@ -559,6 +604,10 @@
         const dist    = place.location ? GeoUtils.format(GeoUtils.distance(state.userLat, state.userLng, place.location.latitude, place.location.longitude)) : '';
         const url     = place.googleMapsUri || '';
 
+        // 출처 태그 (google/naver)
+        const source = place.source || 'google'; // 데이터에 없으면 기본 google
+        const sourceTag = `<span class="tag ${source}">${source === 'google' ? 'Google' : 'Naver'}</span>`;
+
         // 영업 중/종료 태그
         const isOpen  = place.regularOpeningHours?.openNow;
         const openTag = isOpen === true ? '<span class="tag open">영업 중</span>' : isOpen === false ? '<span class="tag closed">영업 종료</span>' : '';
@@ -570,7 +619,7 @@
           <div class="result-name">${name}</div>
           <div class="result-meta">${[dist, rating, address].filter(Boolean).join(' · ')}</div>
           <div class="result-tags">
-            ${openTag}
+            ${sourceTag} ${openTag}
             ${keywords.map(k => `<span class="tag">${k}</span>`).join('')}
           </div>
           <div class="map-hint">지도에서 보기 →</div>
@@ -589,6 +638,9 @@
   function search() {
     const errorEl = document.getElementById('error-msg');
     errorEl.classList.remove('show');
+
+    // 새 검색 시작할 때 반경 초기화
+    state.currentRadius = 500;
 
     if (!navigator.geolocation) { errorEl.classList.add('show'); return; }
 
@@ -616,26 +668,34 @@
     const keyword  = keywords.length ? keywords.join(' ') + ' 카페' : '카페';
 
     try {
-      const res  = await fetch(`/api/search?lat=${state.userLat}&lng=${state.userLng}&keyword=${encodeURIComponent(keyword)}`);
+      // 초기 검색은 항상 500m부터 시작하고, 캐시는 radius=500 키로 활용
+      const res  = await fetch(`/api/search?lat=${state.userLat}&lng=${state.userLng}&keyword=${encodeURIComponent(keyword)}&radius=500`);
       const data = await res.json();
 
       document.getElementById('loading').classList.remove('show');
 
       if (data.places?.length) {
-        state.places = data.places;
-        state.sort   = 'distance';
+        state.places      = data.places      || [];
+        state.trendPlaces = data.trendPlaces || [];
+        state.sort        = 'distance';
 
         // 반경 확장 안내 메시지
-        if (data.expandedRadius && data.expandedRadius > 500) {
+        if (data.expandedRadius && data.expandedRadius > 500 && state.sort !== 'trend') {
           const notice = document.getElementById('expand-notice');
           notice.textContent = `근처에 없어서 ${(data.expandedRadius / 1000).toFixed(1)}km 범위로 넓혀봤어요 🗺`;
           notice.classList.add('show');
         }
 
+        ['sort-distance', 'sort-rating', 'sort-trend'].forEach(id => {
+          document.getElementById(id).classList.remove('on');
+        });
         document.getElementById('sort-distance').classList.add('on');
-        document.getElementById('sort-rating').classList.remove('on');
         document.getElementById('sort-bar').classList.add('show');
         Renderer.render(Sorter.sort(state.places, 'distance'));
+
+        state.currentRadius = data.expandedRadius || 500;
+        document.getElementById('expand-btn-row').style.display = 
+          state.currentRadius < 5000 ? '' : 'none';
       } else {
         document.getElementById('results').innerHTML = '<p class="no-result">근처에 카페가 없어요 😢</p>';
       }
@@ -645,12 +705,80 @@
     }
   }
 
+  // 현재 검색에 사용된 반경 상태 추가
+  // state 객체에 추가
+  state.currentRadius = 500; // 현재 검색 반경 (기본 500m)
+
+  // 반경 넓히기 함수
+  async function expandSearch() {
+    // 500 → 1000 → 2000 → 5000 순으로 확장
+    const steps = [500, 1000, 2000, 5000];
+    const currentIdx = steps.indexOf(state.currentRadius);
+    if (currentIdx === steps.length - 1) {
+      alert('더 이상 넓힐 수 없어요!');
+      return;
+    }
+    state.currentRadius = steps[currentIdx + 1];
+    
+    document.getElementById('loading').classList.add('show');
+    document.getElementById('results').innerHTML = '';
+    document.getElementById('expand-btn-row').style.display = 'none';
+    document.getElementById('sort-bar').classList.remove('show');
+
+    // 반경을 강제로 지정해서 재검색
+    const keywords = ChipManager.getAllKeywords();
+    const keyword  = keywords.length ? keywords.join(' ') + ' 카페' : '카페';
+
+    try {
+      const res  = await fetch(
+        `/api/search?lat=${state.userLat}&lng=${state.userLng}&keyword=${encodeURIComponent(keyword)}&radius=${state.currentRadius}`
+      );
+      const data = await res.json();
+
+      document.getElementById('loading').classList.remove('show');
+
+      if (data.places?.length) {
+        state.places = data.places;
+        const notice = document.getElementById('expand-notice');
+        notice.textContent = `${(state.currentRadius / 1000).toFixed(1)}km 범위로 찾아봤어요 🗺`;
+        notice.classList.add('show');
+        document.getElementById('sort-bar').classList.add('show');
+        document.getElementById('expand-btn-row').style.display = state.currentRadius < 5000 ? '' : 'none';
+        Renderer.render(Sorter.sort(state.places, state.sort));
+      }
+    } catch {
+      document.getElementById('loading').classList.remove('show');
+    }
+  }
+
   // 정렬 변경
   function sortBy(type) {
     state.sort = type;
-    document.getElementById('sort-distance').classList.toggle('on', type === 'distance');
-    document.getElementById('sort-rating').classList.toggle('on', type === 'rating');
-    Renderer.render(Sorter.sort(state.places, type));
+
+    // 모든 버튼 off
+    ['sort-distance', 'sort-rating', 'sort-trend'].forEach(id => {
+      document.getElementById(id).classList.remove('on');
+    });
+
+    // 선택된 버튼 on
+    const idMap = { distance: 'sort-distance', rating: 'sort-rating', trend: 'sort-trend' };
+    document.getElementById(idMap[type]).classList.add('on');
+
+    // 트렌드일 때 반경 관련 UI 숨기기
+    const isTrend = type === 'trend';
+    const expandNotice = document.getElementById('expand-notice');
+    const expandBtnRow = document.getElementById('expand-btn-row');
+
+    if (expandNotice) {
+      expandNotice.classList.toggle('show', !isTrend && expandNotice.textContent !== '');
+    }
+    if (expandBtnRow) {
+      expandBtnRow.style.display = isTrend ? 'none' : (state.currentRadius < 5000 ? '' : 'none');
+    }
+
+    // 트렌드는 네이버 결과, 나머지는 구글 결과
+    const places = type === 'trend' ? state.trendPlaces : state.places;
+    Renderer.render(Sorter.sort(places, type));
   }
 
   // 커스텀 칩 추가 (버튼 클릭)
