@@ -183,6 +183,32 @@ class NaverSearcher {
 }
 
 // ─────────────────────────────────────────────
+// KakaoGeocoder: 카카오 지오코딩 API (주소 → 좌표)
+// 위치 선택 모달에서 주소 검색할 때 사용
+// ─────────────────────────────────────────────
+class KakaoGeocoder {
+  constructor() {
+    this.apiKey  = process.env.KAKAO_REST_API_KEY;
+    this.endpoint = 'https://dapi.kakao.com/v2/local/search/address.json';
+  }
+
+  async geocode(address) {
+    const res = await fetch(
+      `${this.endpoint}?query=${encodeURIComponent(address)}`,
+      { headers: { Authorization: `KakaoAK ${this.apiKey}` } }
+    );
+    const data = await res.json();
+    const doc  = data.documents?.[0];
+    if (!doc) return null;
+    return {
+      lat: parseFloat(doc.y),
+      lng: parseFloat(doc.x),
+      address: doc.address_name
+    };
+  }
+}
+
+// ─────────────────────────────────────────────
 // 캐시 키 생성 헬퍼
 // 위치는 소수점 2자리로 반올림 (약 1km 단위로 동일 취급)
 // ─────────────────────────────────────────────
@@ -199,7 +225,16 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET');
 
-  const { lat, lng, keyword, radius } = req.query;
+  const { lat, lng, keyword, radius, force, geocode } = req.query;
+
+  // geocode 요청이면 주소 → 좌표 변환만 하고 반환
+  if (geocode) {
+    const geocoder = new KakaoGeocoder();
+    const result   = await geocoder.geocode(geocode);
+    if (!result) return res.status(404).json({ error: '주소를 찾지 못했어요' });
+    return res.status(200).json(result);
+  }
+
   console.log(`[SEARCH] 요청 시작: lat=${lat}, lng=${lng}, keyword=${keyword}`);
 
   if (!lat || !lng || !keyword) {
