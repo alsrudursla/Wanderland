@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/images/wanderland-logo-192.png">
+  <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=61503eb94f2c868e383de9347f24f56c&libraries=services"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -100,6 +101,158 @@
     }
 
     .section-title { font-family: 'Nanum Pen Script', cursive; font-size: 20px; color: var(--ink); margin-bottom: 12px; padding-left: 20px; }
+
+    /* 위치 선택 모달 지도 */
+    #kakao-map { width: 100%; height: 240px; border-radius: 4px; border: 1px solid var(--line); }
+
+    /* 저장 버튼 */
+    .save-btn {
+      background: none; border: none; cursor: pointer;
+      font-size: 18px; padding: 4px; line-height: 1;
+      transition: transform 0.1s;
+    }
+    .save-btn:hover { transform: scale(1.2); }
+
+    /* 피드백 버튼 */
+    .react-row {
+      display: flex; gap: 8px; margin-top: 10px;
+    }
+    .react-btn {
+      background: none; border: none; cursor: pointer;
+      font-size: 18px; padding: 2px;
+      transition: transform 0.15s;
+      line-height: 1;
+    }
+    .react-btn:hover { transform: scale(1.2); }
+    .react-btn.voted { opacity: 0.5; cursor: default; }
+
+    /* 카드 액션 행 */
+    .card-actions {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--line);
+    }
+
+    .card-action-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px dashed var(--line);
+    }
+
+    .card-action-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 17px;
+      padding: 2px 4px;
+      border-radius: 6px;
+      transition: transform 0.1s, background 0.1s;
+      line-height: 1;
+    }
+
+    .card-action-btn:hover { transform: scale(1.2); background: var(--cream-dark); }
+    .card-action-btn.voted { opacity: 0.4; cursor: default; transform: none; }
+    .card-action-btn.saved { color: #E83A3A; }
+
+    /* 좋아요/별로 투표 후 색상 */
+    .card-action-btn.voted-good { 
+      opacity: 1; 
+      filter: sepia(1) saturate(3) hue-rotate(80deg); /* 초록빛 */
+    }
+    .card-action-btn.voted-bad { 
+      opacity: 1;
+      filter: sepia(1) saturate(3) hue-rotate(300deg); /* 붉은빛 */
+    }
+
+    /* 왼쪽 액션 바 */
+    .action-bar {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      position: sticky;
+      top: 20px;
+      background: #fdfaf4;
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      padding: 10px 8px;
+      box-shadow: 2px 3px 0 var(--cream-dark);
+      min-width: 52px;
+      align-items: center;
+    }
+
+    .action-bar.show { display: flex; }
+
+    .action-bar-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .action-bar-icon {
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .action-bar-label {
+      font-size: 9px;
+      color: var(--ink-faint);
+      font-family: 'DM Sans', sans-serif;
+      white-space: nowrap;
+    }
+
+    .action-bar-divider {
+      width: 24px;
+      height: 1px;
+      background: var(--line);
+      margin: 4px 0;
+    }
+
+    /* 왼쪽 설명 레이블 */
+    .action-label {
+      font-size: 10px;
+      color: var(--ink-faint);
+      line-height: 1.6;
+      white-space: nowrap;
+      padding-top: 2px;
+    }
+
+    /* 오른쪽 버튼 그룹 */
+    .action-btns {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-left: auto;
+    }
+
+    /* 저장 버튼 */
+    .save-btn {
+      background: none; border: none; cursor: pointer;
+      font-size: 18px; padding: 2px; line-height: 1;
+      transition: transform 0.15s;
+    }
+    .save-btn:hover { transform: scale(1.2); }
+
+    /* 저장된 카페 목록 */
+    .saved-list { display: flex; flex-direction: column; gap: 10px; padding-left: 16px; }
+    .saved-item {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 13px; color: var(--ink);
+      border-bottom: 1px dashed var(--line); padding-bottom: 8px;
+    }
+    .saved-item-name { font-family: 'Nanum Pen Script', cursive; font-size: 17px; }
+    .saved-delete-btn {
+      font-size: 12px; color: var(--ink-faint);
+      background: none; border: none; cursor: pointer;
+      padding: 2px 6px;
+    }
+    .saved-delete-btn:hover { color: var(--accent); }
 
     /* ── 칩 영역 ── */
     .chips {
@@ -214,6 +367,15 @@
     .result-meta { font-size: 12px; color: var(--ink-faint); margin-bottom: 8px; }
     .result-tags { display: flex; flex-wrap: wrap; gap: 6px; }
 
+    /* 결과 영역 래퍼 */
+    .results-wrapper {
+      display: flex;
+      gap: 12px;
+      width: 100%;
+      max-width: 440px;
+      align-items: flex-start;
+    }
+
     .tag { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: var(--cream-dark); color: var(--ink-light); }
     .tag.google { background-color: #4285F4; color: white; }
     .tag.naver { background-color: #03C75A; color: white; }
@@ -228,6 +390,7 @@
     /* ── 공통 모달 ── */
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(30,26,22,0.45); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
     .modal-overlay.show { display: flex; }
+    #feedback-modal { z-index: 200; } /* 피드백 모달은 다른 모달 위에 */
 
     .modal { background: #fdfaf4; border: 1px solid var(--line); border-radius: 2px; padding: 28px 24px; width: 100%; max-width: 340px; box-shadow: 4px 6px 0 var(--line); position: relative; max-height: 80vh; overflow-y: auto; }
 
@@ -283,10 +446,11 @@
     <div class="logo">Wander<span>land</span></div>
     <p class="tagline">오늘 카페 어디가지?</p>
     <div class="header-btns">
-      <button class="icon-btn" onclick="openModal('feedback-modal')" title="피드백">✏️</button>
       <button class="icon-btn" onclick="openModal('info-modal')" title="앱 안내">ℹ</button>
-      <button class="icon-btn" onclick="openModal('devnote-modal')" title="개발자 노트">📋</button>
       <a class="icon-btn" href="/dashboard.html" title="대시보드">📊</a>
+      <button class="icon-btn" onclick="openModal('saved-modal')" title="저장한 카페">🔖</button>
+      <button class="icon-btn" onclick="openModal('feedback-modal')" title="피드백">✏️</button>
+      <button class="icon-btn" onclick="openModal('devnote-modal')" title="개발자 노트">📋</button>
     </div>
   </header>
 
@@ -325,6 +489,18 @@
     <div class="chips" id="custom-chips"></div>
 
     <hr class="divider">
+    <button
+      onclick="openModal('location-modal')"
+      style="
+        width:calc(100% - 20px); margin-left:20px; margin-bottom:8px; padding:10px;
+        font-family:'Nanum Pen Script',cursive; font-size:18px;
+        background:transparent; color:var(--ink-light);
+        border:1.5px dashed var(--line); border-radius:2px; cursor:pointer;
+      "
+      id="location-display"
+    >
+      📍 다른 위치로 검색
+    </button>
     <button class="find-btn" onclick="search()">찾아줘 →</button>
     <p class="error-msg" id="error-msg">위치 권한이 필요해요. 브라우저에서 허용해줘요!</p>
   </div>
@@ -357,7 +533,24 @@
 
   <!-- 반경 확장 안내 -->
   <p class="expand-notice" id="expand-notice"></p>
-  <div class="results" id="results"></div>
+    <div class="results-wrapper">
+    <div class="action-bar" id="action-bar">
+      <div class="action-bar-item">
+        <span class="action-bar-icon">🤍</span>
+        <span class="action-bar-label">저장</span>
+      </div>
+      <div class="action-bar-divider"></div>
+      <div class="action-bar-item">
+        <span class="action-bar-icon">👍</span>
+        <span class="action-bar-label">좋아요</span>
+      </div>
+      <div class="action-bar-item">
+        <span class="action-bar-icon">👎</span>
+        <span class="action-bar-label">별로</span>
+      </div>
+    </div>
+    <div class="results" id="results"></div>
+  </div>
 
   <!-- (i) 앱 안내 모달 — 내용은 API에서 동적으로 채움 -->
   <div class="modal-overlay" id="info-modal">
@@ -397,6 +590,60 @@
       <span class="modal-label">한 마디 (선택)</span>
       <textarea class="modal-textarea" id="feedback-comment" placeholder="불편한 점, 원하는 기능, 뭐든요!"></textarea>
       <button class="modal-submit" id="modal-submit" onclick="submitFeedback()">제출할게요 →</button>
+    </div>
+  </div>
+
+  <!-- 위치 선택 모달 -->
+  <div class="modal-overlay" id="location-modal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('location-modal')">✕</button>
+      <p class="modal-title">위치 선택 📍</p>
+
+      <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <input
+          id="location-search-input"
+          class="keyword-input"
+          style="flex:1"
+          placeholder="동네 검색 (예: 혜화동)"
+          type="text"
+        >
+        <button class="keyword-add-btn" onclick="LocationManager.search()">검색</button>
+      </div>
+
+      <div style="position:relative;">
+        <div id="map-loading" style="
+          position:absolute; inset:0;
+          display:flex; align-items:center; justify-content:center;
+          background:var(--cream); border-radius:4px;
+          font-family:'Nanum Pen Script',cursive; font-size:18px; color:var(--ink-faint);
+          z-index:1;
+        ">지도 불러오는 중... 🗺</div>
+        <div id="kakao-map"></div>
+      </div>
+
+      <div style="margin-top:8px; display:flex; flex-direction:column; gap:4px;">
+        <p style="font-size:11px; color:var(--ink-faint); text-align:center">
+          지도를 클릭하면 위치가 선택돼요
+        </p>
+        <p style="font-size:11px; color:var(--ink-faint); text-align:center; font-style:italic;">
+          선택하지 않으면 현재 GPS 위치로 검색돼요 📡
+        </p>
+      </div>
+
+      <button class="modal-submit" style="margin-top:12px" onclick="LocationManager.confirm()">
+        이 위치로 검색할게요 →
+      </button>
+    </div>
+  </div>
+
+  <!-- 저장한 카페 모달 -->
+  <div class="modal-overlay" id="saved-modal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('saved-modal')">✕</button>
+      <p class="modal-title">저장한 카페 🔖</p>
+      <div class="saved-list" id="saved-list">
+        <p style="font-size:13px; color:var(--ink-faint)">아직 저장한 카페가 없어요</p>
+      </div>
     </div>
   </div>
 
@@ -465,12 +712,33 @@
       ContentLoader.loadDevNotes();
       ContentLoader._devLoaded = true;
     }
+    if (id === 'location-modal') {
+      setTimeout(() => LocationManager.initMap(), 100); // DOM 렌더 후 초기화
+    }
+    if (id === 'saved-modal') SaveManager.renderModal();
+    if (id === 'feedback-modal') {
+      // 카페 피드백에서 열린 경우 타이틀 변경
+      const title = document.querySelector('#feedback-modal .modal-title');
+      if (state.pendingCafeName) {
+        const emoji = state.pendingSatisfaction === 'good' ? '👍' : '👎';
+        title.textContent = `${emoji} 이유가 있나요? 🗒`;
+        document.getElementById('feedback-comment').placeholder =
+          `${state.pendingCafeName}에 대해 한 마디 남겨줘요! (선택)`;
+      } else {
+        title.textContent = '어떠셨어요? 🗒';
+        document.getElementById('feedback-comment').placeholder =
+          '불편한 점, 원하는 기능, 뭐든요!';
+      }
+    }
   }
 
   function closeModal(id) {
     document.getElementById(id).classList.remove('show');
     if (id === 'feedback-modal') {
       state.feedbackRating = 0;
+      state.pendingCafeName = null;
+      state.pendingSatisfaction = null;
+      state.pendingKeywords = null;
       document.querySelectorAll('.star').forEach(s => s.classList.remove('on'));
       document.getElementById('feedback-comment').value = '';
     }
@@ -481,6 +749,212 @@
       if (e.target === overlay) overlay.classList.remove('show');
     });
   });
+
+  // ─────────────────────────────────────────────
+  // LocationManager: 위치 선택 관리 (GPS + 카카오맵 핀)
+  // ─────────────────────────────────────────────
+  const LocationManager = {
+    map:    null,  // 카카오맵 인스턴스
+    marker: null,  // 현재 선택 핀
+    lat:    null,
+    lng:    null,
+
+    // 지도 초기화 (모달 열릴 때 1회)
+    initMap() {
+      if (this.map) return;
+
+      // SDK는 이미 로드됨, 바로 지도 생성
+      const center = new kakao.maps.LatLng(
+        state.userLat || 37.5665,
+        state.userLng || 126.9780
+      );
+      this.map = new kakao.maps.Map(
+        document.getElementById('kakao-map'),
+        { center, level: 4 }
+      );
+
+      // 지도 로드 완료되면 로딩 숨기기
+      kakao.maps.event.addListener(this.map, 'tilesloaded', () => {
+        const loading = document.getElementById('map-loading');
+        if (loading) loading.style.display = 'none';
+      });
+
+      kakao.maps.event.addListener(this.map, 'click', e => {
+        this.setPin(e.latLng.getLat(), e.latLng.getLng());
+      });
+      if (state.userLat) this.setPin(state.userLat, state.userLng);
+    },
+
+    // 핀 설정
+    setPin(lat, lng) {
+      this.lat = lat;
+      this.lng = lng;
+      const pos = new kakao.maps.LatLng(lat, lng);
+      if (this.marker) {
+        this.marker.setPosition(pos);
+      } else {
+        this.marker = new kakao.maps.Marker({ position: pos, map: this.map });
+      }
+      this.map.panTo(pos);
+    },
+
+    // 주소 검색
+    async search() {
+      const query = document.getElementById('location-search-input').value.trim();
+      if (!query) return;
+      
+      // 검색 중 로딩 표시
+      const loading = document.getElementById('map-loading');
+      if (loading) loading.style.display = 'flex';
+
+      const res  = await fetch(`/api/search?geocode=${encodeURIComponent(query)}`);
+      const data = await res.json();
+
+      if (data.lat) {
+        this.setPin(data.lat, data.lng);
+        // 핀 찍으면 tilesloaded 이벤트가 로딩 숨겨줌
+      } else {
+        alert('주소를 찾지 못했어요');
+      }
+    },
+
+    // 위치 확정
+    confirm() {
+      if (!this.lat) { alert('지도를 클릭해서 위치를 선택해줘요!'); return; }
+      state.selectedLat  = this.lat;
+      state.selectedLng  = this.lng;
+      state.usingCustomLocation = true;
+
+      // 버튼 텍스트 업데이트
+      document.getElementById('location-display').textContent =
+        `📍 ${state.selectedAddr || '선택한 위치'}로 검색`;
+
+      // 역지오코딩으로 주소 가져오기
+      const geocoder = new kakao.maps.services.Geocoder();
+      geocoder.coord2Address(this.lng, this.lat, (result, status) => {
+        if (status === kakao.maps.services.Status.OK) {
+          const addr = result[0].road_address?.address_name
+            || result[0].address?.address_name || '';
+          state.selectedAddr = addr;
+          document.getElementById('location-display').textContent =
+            `📍 ${addr}으로 검색`;
+        }
+      });
+
+      closeModal('location-modal');
+    }
+  };
+
+  // ─────────────────────────────────────────────
+  // SaveManager: 카페 저장/삭제 (로컬스토리지)
+  // ─────────────────────────────────────────────
+  const SaveManager = {
+    KEY: 'wanderland_saved',
+
+    // 저장된 카페 목록 가져오기
+    getAll() {
+      return JSON.parse(localStorage.getItem(this.KEY) || '[]');
+    },
+
+    // 카페 저장
+    save(place) {
+      const list = this.getAll();
+      // 중복 체크 (이름+주소)
+      const exists = list.some(p => p.name === place.name && p.address === place.address);
+      if (exists) return false;
+      list.unshift({ // 최신이 위로
+        name:    place.name,
+        address: place.address,
+        url:     place.url,
+        source:  place.source,
+        keywords: place.keywords || [],
+        savedAt: new Date().toISOString()
+      });
+      localStorage.setItem(this.KEY, JSON.stringify(list));
+      return true;
+    },
+
+    // 카페 삭제
+    remove(name, address) {
+      const list = this.getAll().filter(
+        p => !(p.name === name && p.address === address)
+      );
+      localStorage.setItem(this.KEY, JSON.stringify(list));
+    },
+
+    // 저장 여부 확인
+    isSaved(name, address) {
+      return this.getAll().some(p => p.name === name && p.address === address);
+    },
+
+    // 저장 목록 모달 렌더링
+    renderModal() {
+      const list = this.getAll();
+      const container = document.getElementById('saved-list');
+
+      if (!list.length) {
+        container.innerHTML = '<p style="font-size:13px; color:var(--ink-faint)">아직 저장한 카페가 없어요</p>';
+        return;
+      }
+
+      container.innerHTML = list.map(p => `
+        <div class="saved-item" style="flex-direction:column; align-items:flex-start; gap:6px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+            <div>
+              <div class="saved-item-name">${p.name}</div>
+              <div style="font-size:11px; color:var(--ink-faint)">${p.address}</div>
+              ${p.keywords?.length ? `
+                <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:4px;">
+                  ${p.keywords.map(k => `<span class="tag">${k}</span>`).join('')}
+                </div>
+              ` : ''}
+            </div>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <a href="${p.url}" target="_blank" style="font-size:11px; color:var(--ink-faint); text-decoration:none;">지도 →</a>
+              <button class="saved-delete-btn" onclick="SaveManager.remove('${p.name.replace(/'/g,"\\'")}', '${p.address.replace(/'/g,"\\'")}'); SaveManager.renderModal();">삭제</button>
+            </div>
+          </div>
+          <!-- 저장 목록에서도 피드백 가능 -->
+          <div class="card-action-row" style="width:100%; justify-content:flex-start;">
+            <button
+              class="card-action-btn"
+              title="좋았어요"
+              data-name="${p.name.replace(/"/g,'&quot;')}"
+              data-address="${p.address.replace(/"/g,'&quot;')}"
+              data-source="${p.source}"
+              data-keywords="${(p.keywords || []).join(',')}"
+              data-satisfaction="good"
+              onclick="sendCafeFeedbackFromSaved(event, this)"
+            >👍</button>
+            <button
+              class="card-action-btn"
+              title="별로였어요"
+              data-name="${p.name.replace(/"/g,'&quot;')}"
+              data-address="${p.address.replace(/"/g,'&quot;')}"
+              data-source="${p.source}"
+              data-keywords="${(p.keywords || []).join(',')}"
+              data-satisfaction="bad"
+              onclick="sendCafeFeedbackFromSaved(event, this)"
+            >👎</button>
+            <span style="font-size:11px; color:var(--ink-faint); margin-left:4px;">다녀오셨나요?</span>
+          </div>
+        </div>
+      `).join('');
+    }
+  };
+
+  // 저장 목록에서 피드백 보낼 때 — data 속성에서 읽어오기
+  function sendCafeFeedbackFromSaved(e, btn) {
+    const name         = btn.dataset.name;
+    const address      = btn.dataset.address;
+    const source       = btn.dataset.source;
+    const satisfaction = btn.dataset.satisfaction;
+    const keywords     = btn.dataset.keywords
+      ? btn.dataset.keywords.split(',').filter(Boolean)
+      : [];
+
+    sendCafeFeedback(e, btn, name, address, source, satisfaction, keywords);
+  }
 
   // ─────────────────────────────────────────────
   // ChipManager : 칩 선택/추가/삭제 관리
@@ -624,11 +1098,108 @@
           </div>
           <div class="map-hint">지도에서 보기 →</div>
         `;
+
+        const isSaved = SaveManager.isSaved(name, address);
+
+        card.innerHTML = `
+          <div class="result-name">${name}</div>
+          <div class="result-meta">${[dist, rating, address].filter(Boolean).join(' · ')}</div>
+          <div class="result-tags">
+            ${openTag}
+            ${keywords.map(k => `<span class="tag">${k}</span>`).join('')}
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+            <div class="card-action-row">
+              <button
+                class="card-action-btn ${isSaved ? 'saved' : ''}"
+                title="저장"
+                data-name="${name.replace(/"/g,'&quot;')}"
+                data-address="${address.replace(/"/g,'&quot;')}"
+                data-url="${url}"
+                data-source="${place.source || 'google'}"
+                data-keywords="${ChipManager.getAllKeywords().join(',')}"
+                onclick="toggleSaveFromCard(event, this)"
+              >${isSaved ? '🧡' : '🤍'}</button>
+              <button
+                class="card-action-btn"
+                title="좋았어요"
+                onclick="sendCafeFeedback(event, this, '${name.replace(/'/g,"\\'")}', '${address.replace(/'/g,"\\'")}', '${place.source}', 'good')"
+              >👍</button>
+              <button
+                class="card-action-btn"
+                title="별로였어요"
+                onclick="sendCafeFeedback(event, this, '${name.replace(/'/g,"\\'")}', '${address.replace(/'/g,"\\'")}', '${place.source}', 'bad')"
+              >👎</button>
+            </div>
+          <div class="map-hint">지도에서 보기 →</div>
+        `;
+
         card.onclick = () => window.open(url, '_blank');
         container.appendChild(card);
       });
     }
   };
+
+  // 저장/취소 토글
+  function toggleSaveFromCard(e, btn) {
+    e.stopPropagation();
+    const name     = btn.dataset.name;
+    const address  = btn.dataset.address;
+    const url      = btn.dataset.url;
+    const source   = btn.dataset.source;
+    const keywords = btn.dataset.keywords
+      ? btn.dataset.keywords.split(',').filter(Boolean)
+      : [];
+
+    if (SaveManager.isSaved(name, address)) {
+      SaveManager.remove(name, address);
+      btn.textContent = '🤍';
+      btn.classList.remove('saved');
+    } else {
+      SaveManager.save({ name, address, url, source, keywords });
+      btn.textContent = '🧡';
+      btn.classList.add('saved');
+    }
+  }
+
+  // 카페 만족/불만족 피드백 → 구글 시트 저장
+  async function sendCafeFeedback(e, btn, cafeName, cafeAddress, cafeSource, satisfaction, keywords) {
+    e.stopPropagation(); // 카드 클릭 방지
+    if (btn.classList.contains('voted') || 
+        btn.classList.contains('voted-good') || 
+        btn.classList.contains('voted-bad')) return;
+
+    // 버튼 색상 채우기
+    const isGood = satisfaction === 'good';
+    btn.classList.add(isGood ? 'voted-good' : 'voted-bad');
+
+    // 반대쪽 버튼 비활성화
+    const row = btn.closest('.card-action-row');
+    if (row) {
+      row.querySelectorAll('.card-action-btn[title="좋았어요"], .card-action-btn[title="별로였어요"]')
+        .forEach(b => {
+          if (b !== btn) b.classList.add('voted');
+        });
+    }
+
+    // 시트2에 바로 저장
+    fetch('/api/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'cafe',
+        cafeName, cafeAddress, cafeSource, satisfaction,
+        keywords: keywords !== undefined ? keywords : ChipManager.getAllKeywords() // keywords가 명시적으로 넘어온 경우만 사용, 아니면 현재 칩
+      })
+    }).catch(() => {}); // 실패해도 UX에 영향 없게
+
+    // 피드백 모달 띄우기 (이유 남기기 - 시트1로 저장)
+    // 모달에 카페 이름 표시하기 위해 state에 임시 저장
+    state.pendingCafeName = cafeName;
+    state.pendingSatisfaction = satisfaction;
+    state.pendingKeywords = keywords !== undefined ? keywords : ChipManager.getAllKeywords();
+    openModal('feedback-modal');
+  }
 
   // ─────────────────────────────────────────────
   // 검색 흐름
@@ -648,18 +1219,31 @@
     document.getElementById('results').innerHTML = '';
     document.getElementById('sort-bar').classList.remove('show');
     document.getElementById('expand-notice').classList.remove('show');
+    document.getElementById('action-bar').classList.remove('show');
 
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        state.userLat = pos.coords.latitude;
-        state.userLng = pos.coords.longitude;
-        fetchPlaces();
-      },
-      () => {
-        document.getElementById('loading').classList.remove('show');
-        errorEl.classList.add('show');
-      }
-    );
+    // 로딩 애니메이션 보이게 스크롤
+    document.getElementById('loading').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    if (state.usingCustomLocation && state.selectedLat) {
+      // 직접 선택한 위치로 검색
+      state.userLat = state.selectedLat;
+      state.userLng = state.selectedLng;
+      fetchPlaces();
+    } else {
+      // GPS 위치로 검색
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          state.userLat = pos.coords.latitude;
+          state.userLng = pos.coords.longitude;
+          document.getElementById('location-display').textContent = '📍 현재 위치로 검색';
+          fetchPlaces();
+        },
+        () => {
+          document.getElementById('loading').classList.remove('show');
+          errorEl.classList.add('show');
+        }
+      );
+    }
   }
 
   // API 호출하여 장소 데이터 가져오기
@@ -691,6 +1275,7 @@
         });
         document.getElementById('sort-distance').classList.add('on');
         document.getElementById('sort-bar').classList.add('show');
+        document.getElementById('action-bar').classList.add('show');
         Renderer.render(Sorter.sort(state.places, 'distance'));
 
         state.currentRadius = data.expandedRadius || 500;
@@ -708,6 +1293,10 @@
   // 현재 검색에 사용된 반경 상태 추가
   // state 객체에 추가
   state.currentRadius = 500; // 현재 검색 반경 (기본 500m)
+  state.selectedLat  = null;  // 선택된 위치 (GPS or 핀)
+  state.selectedLng  = null;
+  state.selectedAddr = '현재 위치'; // 표시용 주소
+  state.usingCustomLocation = false; // 직접 선택 여부
 
   // 반경 넓히기 함수
   async function expandSearch() {
@@ -798,7 +1387,11 @@
 
   // 피드백 제출
   async function submitFeedback() {
-    if (!state.feedbackRating) { alert('별점을 선택해줘요!'); return; }
+    // 카페 피드백에서 열린 경우 별점 없어도 됨
+    if (!state.feedbackRating && !state.pendingCafeName) {
+      alert('별점을 선택해줘요!');
+      return;
+    }
 
     const btn = document.getElementById('modal-submit');
     btn.disabled = true;
@@ -808,11 +1401,14 @@
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        rating:  state.feedbackRating,
-        chips:   ChipManager.getAllKeywords(),
+        // 카페 피드백에서 열린 경우 별점 없이 코멘트만
+        rating:  state.feedbackRating || '',
+        chips: state.pendingCafeName
+          ? (state.pendingKeywords || [])   // 카페 피드백에서 열린 경우 저장된 키워드
+          : ChipManager.getAllKeywords(),    // 서비스 피드백 버튼에서 열린 경우 현재 칩
         comment: document.getElementById('feedback-comment').value
       })
-    });
+    }).catch(() => {});
 
     btn.textContent = '감사해요 🎉';
     setTimeout(() => {
