@@ -81,11 +81,11 @@ class GoogleSheetsWriter {
   }
 
   // 구글 시트에 행 추가
-  async appendRow(values) {
+  async appendRow(values, sheetName = '시트1') {
     const token = await this.getAccessToken();
 
     const res = await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${this.sheetId}/values/시트1!A:E:append?valueInputOption=USER_ENTERED`,
+      `https://sheets.googleapis.com/v4/spreadsheets/${this.sheetId}/values/${encodeURIComponent(sheetName)}!A:E:append?valueInputOption=USER_ENTERED`,
       {
         method: 'POST',
         headers: {
@@ -112,18 +112,29 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST만 허용' });
 
-  const { rating, chips, comment } = req.body;
+  // type이 'cafe'면 카페 피드백, 없으면 기존 서비스 피드백
+  const { rating, chips, comment, type, cafeName, cafeAddress, cafeSource, satisfaction, keywords } = req.body;
 
-  if (!rating) return res.status(400).json({ error: '별점은 필수예요' });
+  if (type === 'cafe') {
+    // 카페 피드백(추천 결과) → 시트2에 저장
+    const timestamp = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+    const row = [timestamp, cafeName || '', cafeAddress || '', satisfaction || '', cafeSource || '', (keywords || []).join(', ')];
+    const writer = new GoogleSheetsWriter();
+    await writer.appendRow(row, '시트2'); // 시트2에 저장
+    return res.status(200).json({ success: true });
+  } else {
+    // 서비스 피드백 → 시트1에 저장
+    if (!rating) return res.status(400).json({ error: '별점은 필수예요' });
 
-  const timestamp = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
-  const chipsStr = Array.isArray(chips) ? chips.join(', ') : '';
+    const timestamp = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+    const chipsStr = Array.isArray(chips) ? chips.join(', ') : '';
 
-  // 시트에 저장할 행: [시간, 별점, 선택한 칩, 코멘트]
-  const row = [timestamp, rating, chipsStr, comment || ''];
+    // 시트에 저장할 행: [시간, 별점, 선택한 칩, 코멘트]
+    const row = [timestamp, rating, chipsStr, comment || ''];
 
-  const writer = new GoogleSheetsWriter();
-  await writer.appendRow(row);
+    const writer = new GoogleSheetsWriter();
+    await writer.appendRow(row);
 
-  return res.status(200).json({ success: true });
+    return res.status(200).json({ success: true });
+  }
 }
