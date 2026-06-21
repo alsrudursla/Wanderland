@@ -33,7 +33,7 @@
 
 <br>
 
-<img width="804" height="411" alt="wanderland drawio" src="https://github.com/user-attachments/assets/ba120c96-1e00-4cff-9250-570d6ed2d863" />
+<img width="834" height="391" alt="wanderland3 drawio" src="https://github.com/user-attachments/assets/879e11ed-49f0-4e8d-b59f-edff52bdd46b" />
 
 <br>
 
