@@ -6,106 +6,34 @@
   <meta name="theme-color" content="#fdfaf4">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Wanderland</title>
+  <link rel="stylesheet" href="/styles/main.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/images/wanderland-logo-192.png">
   <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=61503eb94f2c868e383de9347f24f56c&libraries=services"></script>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* index.html 전용: 헤더 아이콘, 칩, 버블, 결과 카드, 모달 등 */
+    .logo-img { position: absolute; top: 0; left: 0; width: 36px; height: 36px; object-fit: contain; }
+    header { position: relative; padding-top: 80px; }
 
-    :root {
-      --cream: #f7f3ec;
-      --cream-dark: #ede7da;
-      --ink: #1e1a16;
-      --ink-light: #6b5f52;
-      --ink-faint: #b5a99a;
-      --accent: #c0392b;
-      --line: #d4c9b0;
-      --green: #2e7d32;
-      --green-bg: #e8f5e9;
-      --red: #c62828;
-      --red-bg: #fce4ec;
-    }
+    .header-btns { position: absolute; top: 0; right: 0; display: flex; background: #fffaf2; border: 1.5px solid var(--line); border-radius: 14px; padding: 4px; }
+    .icon-btn { width: 30px; height: 30px; border-radius: 10px; border: none; background: transparent; color: var(--ink-light); font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; text-decoration: none; }
+    .icon-btn:hover { background: var(--bg-1); color: var(--ink); }
 
-    body {
-      background: var(--cream);
-      font-family: 'DM Sans', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px 16px 80px;
-    }
-
-    header {
-      text-align: center;
-      margin-bottom: 36px;
-      width: 100%;
-      max-width: 380px;
-      position: relative;
-      padding-top: 50px;
-    }
-
-    .logo-img {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 36px;
-      height: 36px;
-      object-fit: contain;
-    }
-
-    .logo { font-family: 'Nanum Pen Script', cursive; font-size: 42px; color: var(--ink); letter-spacing: 1px; line-height: 1; }
-    .logo span { color: var(--accent); }
-    .tagline { font-size: 13px; color: var(--ink-faint); margin-top: 4px; letter-spacing: 0.5px; }
-
-    .header-btns {
-      position: absolute; top: 0; right: 0;
-      display: flex; gap: 8px; align-items: center;
-    }
-
-    .icon-btn {
-      width: 32px; height: 32px;
-      border-radius: 50%;
-      border: 1px solid var(--line);
-      background: #fdfaf4;
-      color: var(--ink-light);
-      font-size: 15px;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: all 0.15s;
-      text-decoration: none;
-    }
-
-    .icon-btn:hover { background: var(--ink); color: #fdfaf4; border-color: var(--ink); }
-
-    /* ── 메모지 카드 ── */
+    /* 메인 카드는 투명도 + 블러만 덮어씀 (대시보드는 불투명 유지) */
     .card {
-      background: #fdfaf4;
-      border: 1px solid var(--line);
-      border-radius: 2px;
-      padding: 28px 24px;
-      width: 100%;
-      max-width: 380px;
-      position: relative;
-      box-shadow: 3px 4px 0 var(--cream-dark), 6px 8px 0 var(--line);
-    }
-
-    /* 노트 왼쪽 세로선 */
-    .card::before {
-      content: '';
-      position: absolute; top: 0; left: 32px;
-      width: 1px; height: 100%;
-      background: rgba(192, 57, 43, 0.15);
+      background: rgba(255, 250, 242, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 24px 0 20px;
+      z-index: 1;
     }
 
     .section-title { font-family: 'Nanum Pen Script', cursive; font-size: 20px; color: var(--ink); margin-bottom: 12px; padding-left: 20px; }
 
-    /* 위치 선택 모달 지도 */
-    #kakao-map { width: 100%; height: 240px; border-radius: 4px; border: 1px solid var(--line); }
+    #kakao-map { width: 100%; height: 240px; border-radius: 14px; border: 1.5px solid var(--line); }
 
-    /* 저장 버튼 */
     .save-btn {
       background: none; border: none; cursor: pointer;
       font-size: 18px; padding: 4px; line-height: 1;
@@ -113,10 +41,7 @@
     }
     .save-btn:hover { transform: scale(1.2); }
 
-    /* 피드백 버튼 */
-    .react-row {
-      display: flex; gap: 8px; margin-top: 10px;
-    }
+    .react-row { display: flex; gap: 8px; margin-top: 10px; }
     .react-btn {
       background: none; border: none; cursor: pointer;
       font-size: 18px; padding: 2px;
@@ -126,14 +51,13 @@
     .react-btn:hover { transform: scale(1.2); }
     .react-btn.voted { opacity: 0.5; cursor: default; }
 
-    /* 카드 액션 행 */
     .card-actions {
       display: flex;
       align-items: flex-start;
       gap: 12px;
       margin-top: 10px;
       padding-top: 8px;
-      border-top: 1px dashed var(--line);
+      border-top: 1.5px dashed var(--line);
     }
 
     .card-action-row {
@@ -142,7 +66,7 @@
       gap: 8px;
       margin-top: 8px;
       padding-top: 6px;
-      border-top: 1px dashed var(--line);
+      border-top: 1.5px dashed var(--line);
     }
 
     .card-action-btn {
@@ -151,104 +75,51 @@
       cursor: pointer;
       font-size: 17px;
       padding: 2px 4px;
-      border-radius: 6px;
+      border-radius: 8px;
       transition: transform 0.1s, background 0.1s;
       line-height: 1;
     }
 
-    .card-action-btn:hover { transform: scale(1.2); background: var(--cream-dark); }
+    .card-action-btn:hover { transform: scale(1.2); background: var(--bg-1); }
     .card-action-btn.voted { opacity: 0.4; cursor: default; transform: none; }
-    .card-action-btn.saved { color: #E83A3A; }
+    .card-action-btn.saved { color: var(--accent); }
+    .card-action-btn.voted-good { opacity: 1; filter: sepia(1) saturate(3) hue-rotate(60deg); }
+    .card-action-btn.voted-bad { opacity: 1; filter: sepia(1) saturate(3) hue-rotate(300deg); }
 
-    /* 좋아요/별로 투표 후 색상 */
-    .card-action-btn.voted-good { 
-      opacity: 1; 
-      filter: sepia(1) saturate(3) hue-rotate(80deg); /* 초록빛 */
-    }
-    .card-action-btn.voted-bad { 
-      opacity: 1;
-      filter: sepia(1) saturate(3) hue-rotate(300deg); /* 붉은빛 */
-    }
-
-    /* 왼쪽 액션 바 */
     .action-bar {
       display: none;
       flex-direction: column;
       gap: 4px;
       position: sticky;
       top: 20px;
-      background: #fdfaf4;
-      border: 1px solid var(--line);
-      border-radius: 2px;
+      background: #fffaf2;
+      border: 1.5px solid var(--line);
+      border-radius: 14px;
       padding: 10px 8px;
-      box-shadow: 2px 3px 0 var(--cream-dark);
+      box-shadow: 0 4px 0 var(--cream-dark);
       min-width: 52px;
       align-items: center;
     }
 
     .action-bar.show { display: flex; }
 
-    .action-bar-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-    }
+    .action-bar-item { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .action-bar-icon { font-size: 16px; line-height: 1; }
+    .action-bar-label { font-size: 9px; color: var(--ink-light); font-family: 'DM Sans', sans-serif; white-space: nowrap; }
+    .action-bar-divider { width: 24px; height: 1px; background: var(--line); margin: 4px 0; }
 
-    .action-bar-icon {
-      font-size: 16px;
-      line-height: 1;
-    }
+    .action-label { font-size: 10px; color: var(--ink-light); line-height: 1.6; white-space: nowrap; padding-top: 2px; }
+    .action-btns { display: flex; gap: 10px; align-items: center; margin-left: auto; }
 
-    .action-bar-label {
-      font-size: 9px;
-      color: var(--ink-faint);
-      font-family: 'DM Sans', sans-serif;
-      white-space: nowrap;
-    }
-
-    .action-bar-divider {
-      width: 24px;
-      height: 1px;
-      background: var(--line);
-      margin: 4px 0;
-    }
-
-    /* 왼쪽 설명 레이블 */
-    .action-label {
-      font-size: 10px;
-      color: var(--ink-faint);
-      line-height: 1.6;
-      white-space: nowrap;
-      padding-top: 2px;
-    }
-
-    /* 오른쪽 버튼 그룹 */
-    .action-btns {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      margin-left: auto;
-    }
-
-    /* 저장 버튼 */
-    .save-btn {
-      background: none; border: none; cursor: pointer;
-      font-size: 18px; padding: 2px; line-height: 1;
-      transition: transform 0.15s;
-    }
-    .save-btn:hover { transform: scale(1.2); }
-
-    /* 저장된 카페 목록 */
     .saved-list { display: flex; flex-direction: column; gap: 10px; padding-left: 16px; }
     .saved-item {
       display: flex; justify-content: space-between; align-items: center;
       font-size: 13px; color: var(--ink);
-      border-bottom: 1px dashed var(--line); padding-bottom: 8px;
+      border-bottom: 1.5px dashed var(--line); padding-bottom: 8px;
     }
     .saved-item-name { font-family: 'Nanum Pen Script', cursive; font-size: 17px; }
     .saved-delete-btn {
-      font-size: 12px; color: var(--ink-faint);
+      font-size: 12px; color: var(--ink-light);
       background: none; border: none; cursor: pointer;
       padding: 2px 6px;
     }
@@ -272,12 +143,10 @@
     }
 
     .chip:hover { border-color: var(--ink-light); }
-    .chip.on { background: var(--ink); border-color: var(--ink); color: #fdfaf4; }
+    .chip.on { background: var(--ink); border-color: var(--ink); color: #fffaf2; }
     .chip.accent.on { background: var(--accent); border-color: var(--accent); color: #fff; }
-    /* 커스텀 칩 X 버튼 */
     .chip-remove { font-size: 12px; opacity: 0.7; cursor: pointer; margin-left: 2px; }
 
-    /* ── 직접 키워드 입력 ── */
     .keyword-input-row {
       display: flex; gap: 8px;
       padding-left: 20px; margin-bottom: 8px;
@@ -300,65 +169,61 @@
       border: 1.5px solid var(--line); background: transparent; color: var(--ink-light);
       cursor: pointer; transition: all 0.15s; white-space: nowrap;
     }
-    .keyword-add-btn:hover { background: var(--ink); border-color: var(--ink); color: #fdfaf4; }
+    .keyword-add-btn:hover { background: var(--ink); border-color: var(--ink); color: #fffaf2; }
 
     .keyword-hint { font-size: 11px; color: var(--ink-faint); padding-left: 20px; margin-bottom: 16px; }
 
-    .divider { border: none; border-top: 1px dashed var(--line); margin: 4px 0 20px; }
+    .divider { border: none; border-top: 1.5px dashed var(--line); margin: 4px 0 20px; }
 
     .find-btn {
-      width: calc(100% - 20px); margin-left: 20px; padding: 14px;
+      width: calc(100% - 40px); margin-left: 20px; margin-right: 20px; padding: 14px;
       font-family: 'Nanum Pen Script', cursive; font-size: 22px;
-      background: var(--ink); color: #fdfaf4;
-      border: none; border-radius: 2px; cursor: pointer;
+      background: var(--accent); color: #fffaf2;
+      border: none; border-radius: 14px; cursor: pointer;
       letter-spacing: 1px; transition: transform 0.1s, background 0.1s;
     }
     .find-btn:active { transform: scale(0.98); }
-    .find-btn:hover { background: #2c2520; }
+    .find-btn:hover { background: #d97a4a; }
 
-    /* ── 로딩 ── */
     .loading { display: none; text-align: center; padding: 32px 0; font-family: 'Nanum Pen Script', cursive; font-size: 22px; color: var(--ink-light); }
     .loading.show { display: block; }
 
-    /* 로딩 점 애니메이션 */
-    .loading-dots span {
-      display: inline-block;
-      animation: bounce 1.2s infinite;
-      font-size: 28px;
-    }
+    .loading-dots span { display: inline-block; animation: bounce 1.2s infinite; font-size: 28px; }
     .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
     .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
 
     @keyframes bounce {
       0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
-      40%           { transform: translateY(-8px); opacity: 1; }
+      40% { transform: translateY(-8px); opacity: 1; }
     }
 
-    /* ── 정렬 바 ── */
     .sort-bar { display: none; flex-direction: column; align-items: stretch; justify-content: flex-start; width: 100%; max-width: 380px; margin: 16px 0 8px; }
     .sort-bar.show { display: flex; }
     .sort-btns { display: flex; gap: 8px; margin-top: 8px; }
 
-    .sort-btn { font-size: 12px; padding: 4px 12px; border-radius: 20px; border: 1px solid var(--line); background: transparent; color: var(--ink-light); cursor: pointer; transition: all 0.15s; }
-    .sort-btn.on { background: var(--ink); border-color: var(--ink); color: #fdfaf4; }
-
-    /* 구글 기반 정렬 버튼 */
+    .sort-btn { font-size: 12px; padding: 4px 12px; border-radius: 20px; border: 1.5px solid var(--line); background: transparent; color: var(--ink-light); cursor: pointer; transition: all 0.15s; }
+    .sort-btn.on { background: var(--ink); border-color: var(--ink); color: #fffaf2; }
     .sort-btn.google-sort.on { background: #4285F4; border-color: #4285F4; color: #fff; }
-
-    /* 네이버 기반 정렬 버튼 */
     .sort-btn.naver-sort.on { background: #03C75A; border-color: #03C75A; color: #fff; }
 
-    .feedback-link { font-size: 12px; color: var(--ink-faint); cursor: pointer; border-bottom: 1px dashed var(--line); padding-bottom: 1px; background: none; border-top: none; border-left: none; border-right: none; font-family: 'DM Sans', sans-serif; }
+    .feedback-link { font-size: 12px; color: var(--ink-faint); cursor: pointer; border-bottom: 1.5px dashed var(--line); padding-bottom: 1px; background: none; border-top: none; border-left: none; border-right: none; font-family: 'DM Sans', sans-serif; }
     .feedback-link:hover { color: var(--ink-light); }
 
-    /* ── 반경 확장 안내 메시지 ── */
     .expand-notice { display: none; font-size: 12px; color: var(--ink-faint); text-align: center; margin-bottom: 8px; font-style: italic; }
     .expand-notice.show { display: block; }
 
-    /* ── 결과 카드 ── */
     .results { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 12px; }
 
-    .result-card { background: #fdfaf4; border: 1px solid var(--line); border-radius: 2px; padding: 16px 18px; box-shadow: 2px 3px 0 var(--cream-dark); cursor: pointer; transition: transform 0.1s; animation: fadeUp 0.3s ease both; }
+    .result-card {
+      background: #fffaf2;
+      border: 1.5px dashed var(--line);
+      border-radius: 16px;
+      padding: 16px 18px;
+      box-shadow: 0 4px 0 var(--cream-dark);
+      cursor: pointer;
+      transition: transform 0.1s;
+      animation: fadeUp 0.3s ease both;
+    }
     .result-card:hover { transform: translateY(-2px); }
 
     @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
@@ -367,56 +232,45 @@
     .result-meta { font-size: 12px; color: var(--ink-faint); margin-bottom: 8px; }
     .result-tags { display: flex; flex-wrap: wrap; gap: 6px; }
 
-    /* 결과 영역 래퍼 */
-    .results-wrapper {
-      display: flex;
-      gap: 12px;
-      width: 100%;
-      max-width: 440px;
-      align-items: flex-start;
-    }
+    .results-wrapper { display: flex; gap: 12px; width: 100%; max-width: 440px; align-items: flex-start; }
 
-    .tag { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: var(--cream-dark); color: var(--ink-light); }
+    .tag { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: var(--bg-1); color: var(--ink-light); }
     .tag.google { background-color: #4285F4; color: white; }
     .tag.naver { background-color: #03C75A; color: white; }
-    .tag.open   { background: var(--green-bg); color: var(--green); }
-    .tag.closed { background: var(--red-bg);   color: var(--red); }
+    .tag.open { background: var(--green-bg); color: var(--green); }
+    .tag.closed { background: var(--red-bg); color: var(--red); }
     .map-hint { text-align: right; margin-top: 8px; font-size: 11px; color: var(--ink-faint); }
 
     .no-result { text-align: center; font-family: 'Nanum Pen Script', cursive; font-size: 22px; color: var(--ink-faint); padding: 32px 0; }
     .error-msg { display: none; font-size: 13px; color: var(--accent); text-align: center; margin-top: 8px; padding-left: 20px; }
     .error-msg.show { display: block; }
 
-    /* ── 공통 모달 ── */
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(30,26,22,0.45); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(74, 63, 53, 0.4); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
     .modal-overlay.show { display: flex; }
-    #feedback-modal { z-index: 200; } /* 피드백 모달은 다른 모달 위에 */
+    #feedback-modal { z-index: 200; }
 
-    .modal { background: #fdfaf4; border: 1px solid var(--line); border-radius: 2px; padding: 28px 24px; width: 100%; max-width: 340px; box-shadow: 4px 6px 0 var(--line); position: relative; max-height: 80vh; overflow-y: auto; }
+    .modal { background: #fffaf2; border: 1.5px solid var(--line); border-radius: 20px; padding: 28px 24px; width: 100%; max-width: 340px; box-shadow: 0 6px 0 var(--line); position: relative; max-height: 80vh; overflow-y: auto; }
 
     .modal-title { font-family: 'Nanum Pen Script', cursive; font-size: 24px; color: var(--ink); margin-bottom: 16px; }
     .modal-close { position: absolute; top: 12px; right: 16px; font-size: 18px; color: var(--ink-faint); cursor: pointer; background: none; border: none; font-family: 'DM Sans', sans-serif; }
 
-    /* 피드백 모달 */
     .star-row { display: flex; gap: 8px; margin-bottom: 16px; }
     .star { font-size: 28px; cursor: pointer; transition: transform 0.1s; filter: grayscale(1); opacity: 0.4; }
     .star.on { filter: grayscale(0); opacity: 1; }
     .star:hover { transform: scale(1.2); }
     .modal-label { font-family: 'Nanum Pen Script', cursive; font-size: 18px; color: var(--ink-light); margin-bottom: 8px; display: block; }
-    .modal-textarea { width: 100%; font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 10px 12px; border: 1.5px solid var(--line); border-radius: 4px; background: var(--cream); color: var(--ink); resize: none; outline: none; margin-bottom: 16px; height: 80px; }
+    .modal-textarea { width: 100%; font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 10px 12px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--cream); color: var(--ink); resize: none; outline: none; margin-bottom: 16px; height: 80px; }
     .modal-textarea:focus { border-color: var(--ink-light); }
-    .modal-submit { width: 100%; padding: 12px; font-family: 'Nanum Pen Script', cursive; font-size: 20px; background: var(--ink); color: #fdfaf4; border: none; border-radius: 2px; cursor: pointer; transition: background 0.1s; }
-    .modal-submit:hover { background: #2c2520; }
+    .modal-submit { width: 100%; padding: 12px; font-family: 'Nanum Pen Script', cursive; font-size: 20px; background: var(--accent); color: #fffaf2; border: none; border-radius: 14px; cursor: pointer; transition: background 0.1s; }
+    .modal-submit:hover { background: #d97a4a; }
     .modal-submit:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* (i) 안내 모달 */
     .info-section { margin-bottom: 16px; }
     .info-section-title { font-family: 'Nanum Pen Script', cursive; font-size: 18px; color: var(--ink); margin-bottom: 6px; }
     .info-item { font-size: 13px; color: var(--ink-light); line-height: 1.7; padding-left: 4px; }
 
-    /* 개발자 노트 모달 */
     .release-list { display: flex; flex-direction: column; gap: 16px; }
-    .release-note { background: var(--cream); border: 1px solid var(--line); border-radius: 2px; padding: 14px 16px; position: relative; box-shadow: 2px 3px 0 var(--cream-dark); }
+    .release-note { background: var(--cream); border: 1.5px solid var(--line); border-radius: 14px; padding: 14px 16px; position: relative; box-shadow: 0 4px 0 var(--cream-dark); }
     .release-note:nth-child(1) { transform: rotate(-0.5deg); }
     .release-note:nth-child(2) { transform: rotate(0.3deg); }
     .release-note:nth-child(3) { transform: rotate(-0.2deg); }
@@ -424,19 +278,59 @@
     .release-date { font-size: 0.8rem; opacity: 0.7; }
     .release-item { font-size: 13px; color: var(--ink-light); line-height: 1.8; padding-left: 4px; }
     .release-item::before { content: '— '; color: var(--ink-faint); }
-    
-    .footer {
-      margin-top: 40px;
-      font-size: 11px;
-      color: var(--ink-faint);
-      text-align: center;
-      opacity: 0.7;
+
+    /* ── 버블 ── */
+    .bubble-zone {
+      position: fixed;
+      top: 0; bottom: 0;
+      width: 120px;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .bubble-zone.left { left: 0; }
+    .bubble-zone.right { right: 0; }
+
+    @media (max-width: 767px) {
+      .bubble-zone { width: 100%; left: 0; opacity: 0.5; }
     }
 
-    .footer a {
-      color: inherit;
-      text-decoration: none;
+    .bubble {
+      position: absolute;
+      bottom: -80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(255, 250, 242, 0.85);
+      border: 1.5px solid var(--line);
+      font-family: 'Nanum Pen Script', cursive;
+      font-size: 13px;
+      color: var(--ink);
+      white-space: nowrap;
+      pointer-events: auto;
+      cursor: pointer;
+      animation: floatUp linear infinite;
     }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0); opacity: 0; }
+      10% { opacity: 0.9; }
+      90% { opacity: 0.9; }
+      100% { transform: translateY(-110vh); opacity: 0; }
+    }
+
+    .bubble.pop {
+      animation: none !important;
+      transition: transform 0.25s ease-out, opacity 0.25s ease-out;
+      transform: scale(1.6);
+      opacity: 0;
+    }
+
+    .footer { margin-top: 40px; font-size: 11px; color: var(--ink-faint); text-align: center; opacity: 0.7; }
+    .footer a { color: inherit; text-decoration: none; }
   </style>
 </head>
 <body>
@@ -446,13 +340,17 @@
     <div class="logo">Wander<span>land</span></div>
     <p class="tagline">오늘 카페 어디가지?</p>
     <div class="header-btns">
-      <button class="icon-btn" onclick="openModal('info-modal')" title="앱 안내">ℹ</button>
-      <a class="icon-btn" href="/dashboard.html" title="대시보드">📊</a>
-      <button class="icon-btn" onclick="openModal('saved-modal')" title="저장한 카페">🔖</button>
-      <button class="icon-btn" onclick="openModal('feedback-modal')" title="피드백">✏️</button>
-      <button class="icon-btn" onclick="openModal('devnote-modal')" title="개발자 노트">📋</button>
+      <button class="icon-btn" onclick="openModal('info-modal')" title="앱 안내">i</button>
+      <a class="icon-btn" href="/dashboard.html" title="대시보드">▦</a>
+      <button class="icon-btn" onclick="openModal('saved-modal')" title="저장한 카페">♡</button>
+      <button class="icon-btn" onclick="openModal('feedback-modal')" title="피드백">✎</button>
+      <button class="icon-btn" onclick="openModal('devnote-modal')" title="개발자 노트">≡</button>
     </div>
   </header>
+
+  <!-- 인기 디저트 키워드 버블 (배경 장식 + 클릭하면 칩 추가) -->
+  <div class="bubble-zone left" id="bubble-left"></div>
+  <div class="bubble-zone right" id="bubble-right"></div>
 
   <div class="card">
     <!-- 섹션 1: 어떤 카페? (기본 칩) -->
@@ -492,7 +390,7 @@
     <button
       onclick="openModal('location-modal')"
       style="
-        width:calc(100% - 20px); margin-left:20px; margin-bottom:8px; padding:10px;
+        width:calc(100% - 40px); margin-left:20px; margin-right:20px; margin-bottom:8px; padding:10px;
         font-family:'Nanum Pen Script',cursive; font-size:18px;
         background:transparent; color:var(--ink-light);
         border:1.5px dashed var(--line); border-radius:2px; cursor:pointer;
@@ -981,6 +879,12 @@
     addCustom() {
       const input = document.getElementById('keyword-input');
       const val = input.value.trim();
+      this.addKeyword(val);
+      input.value = '';
+    },
+
+    // 값을 직접 받아서 칩으로 추가 (버블 클릭 등에서 재사용)
+    addKeyword(val) {
       if (!val || state.customChips.includes(val)) return;
 
       state.customChips.push(val);
@@ -991,7 +895,6 @@
       chip.innerHTML = `${val} <span class="chip-remove" onclick="ChipManager.removeCustom('${val}', this.parentElement)">✕</span>`;
 
       document.getElementById('custom-chips').appendChild(chip);
-      input.value = '';
     },
 
     // 커스텀 칩 삭제
@@ -1007,6 +910,54 @@
         ...this.getSelected('feature-chips'),
         ...state.customChips
       ];
+    }
+  };
+
+  // ─────────────────────────────────────────────
+  // BubbleManager: 인기 디저트 키워드 버블 생성/클릭 처리
+  // ─────────────────────────────────────────────
+  const BubbleManager = {
+    // v1: 직접 큐레이션한 인기 디저트 키워드 (추후 Redis 집계 데이터로 교체 가능)
+    keywords: [
+      '딸기', '생크림', '말차', '크로플', '시그니처 라떼',
+      '인절미', '바스크 치즈케이크', '마들렌', '소금빵', '쑥떡',
+      '아이스크림', '흑임자', '스콘', '아인슈페너', '에그타르트'
+    ],
+
+    init() {
+      const zones = [document.getElementById('bubble-left'), document.getElementById('bubble-right')];
+      zones.forEach(zone => {
+        // 영역당 버블 4~5개 생성
+        for (let i = 0; i < 5; i++) {
+          this.spawnBubble(zone);
+        }
+      });
+    },
+
+    spawnBubble(zone) {
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.textContent = this.keywords[Math.floor(Math.random() * this.keywords.length)];
+
+      // 좌우 위치/속도/딜레이를 랜덤하게 줘서 자연스럽게 흩어지게
+      bubble.style.left = `${Math.random() * 60}px`;
+      bubble.style.animationDuration = `${8 + Math.random() * 6}s`;
+      bubble.style.animationDelay = `-${Math.random() * 10}s`; // 시작부터 제각각 위치에 있도록
+
+      bubble.addEventListener('click', () => this.popBubble(bubble, zone));
+      zone.appendChild(bubble);
+    },
+
+    popBubble(bubble, zone) {
+      const keyword = bubble.textContent;
+      bubble.classList.add('pop');
+      ChipManager.addKeyword(keyword); // 클릭한 키워드를 바로 칩으로 추가
+
+      // 터지는 애니메이션 끝나면 제거하고, 같은 자리에 새 버블 하나 다시 띄움
+      setTimeout(() => {
+        bubble.remove();
+        this.spawnBubble(zone);
+      }, 250);
     }
   };
 
@@ -1422,6 +1373,7 @@
   // 초기화
   // ─────────────────────────────────────────────
   ChipManager.init();
+  BubbleManager.init();
 </script>
 </body>
 <footer class="footer">

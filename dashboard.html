@@ -4,58 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Wanderland · 대시보드</title>
+  <link rel="stylesheet" href="/styles/main.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --cream: #f7f3ec;
-      --cream-dark: #ede7da;
-      --ink: #1e1a16;
-      --ink-light: #6b5f52;
-      --ink-faint: #b5a99a;
-      --accent: #c0392b;
-      --line: #d4c9b0;
-    }
-
-    body {
-      background: var(--cream);
-      font-family: 'DM Sans', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px 16px 80px;
-      gap: 20px;
-    }
-
-    header { text-align: center; }
-
-    .logo { font-family: 'Nanum Pen Script', cursive; font-size: 36px; color: var(--ink); }
-    .logo span { color: var(--accent); }
-
-    .back-link {
-      font-size: 13px; color: var(--ink-faint);
-      text-decoration: none; border-bottom: 1px dashed var(--line);
-      margin-top: 6px; display: inline-block;
-    }
-
-    .card {
-      background: #fdfaf4;
-      border: 1px solid var(--line);
-      border-radius: 2px;
-      padding: 24px;
-      width: 100%; max-width: 380px;
-      box-shadow: 3px 4px 0 var(--cream-dark);
-      position: relative;
-    }
-
+    /* dashboard.html 전용: 통계 카드 내부 구성 */
     .card::before {
       content: '';
       position: absolute; top: 0; left: 28px;
       width: 1px; height: 100%;
-      background: rgba(192,57,43,0.12);
+      background: rgba(232, 137, 90, 0.15);
     }
 
     .card-title {
@@ -64,39 +22,21 @@
       margin-bottom: 16px; padding-left: 16px;
     }
 
-    /* ── 총 피드백 + 평균 별점 ── */
     .stat-row { display: flex; gap: 16px; padding-left: 16px; }
-
-    .stat-box {
-      flex: 1; background: var(--cream);
-      border: 1px solid var(--line); border-radius: 4px;
-      padding: 12px; text-align: center;
-    }
-
+    .stat-box { flex: 1; background: var(--cream); border: 1.5px solid var(--line); border-radius: 12px; padding: 12px; text-align: center; }
     .stat-value { font-family: 'Nanum Pen Script', cursive; font-size: 32px; color: var(--ink); line-height: 1.1; }
     .stat-label { font-size: 11px; color: var(--ink-faint); margin-top: 4px; }
 
-    /* ── 키워드 통계 바 ── */
     .bar-list { display: flex; flex-direction: column; gap: 10px; padding-left: 16px; }
-
-    .bar-item {}
-
-    .bar-label {
-      display: flex; justify-content: space-between;
-      font-size: 13px; color: var(--ink-light); margin-bottom: 4px;
-    }
-
+    .bar-label { display: flex; justify-content: space-between; font-size: 13px; color: var(--ink-light); margin-bottom: 4px; }
     .bar-track { height: 8px; background: var(--cream-dark); border-radius: 4px; overflow: hidden; }
+    .bar-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.6s ease; }
 
-    .bar-fill { height: 100%; background: var(--ink); border-radius: 4px; transition: width 0.6s ease; }
-
-    /* ── 최근 코멘트 ── */
     .comment-list { display: flex; flex-direction: column; gap: 12px; padding-left: 16px; }
-
     .comment-item { border-left: 2px solid var(--line); padding-left: 10px; }
     .comment-rating { font-size: 12px; color: var(--ink-faint); margin-bottom: 2px; }
-    .comment-text  { font-size: 13px; color: var(--ink); line-height: 1.5; }
-    .comment-time  { font-size: 11px; color: var(--ink-faint); margin-top: 2px; }
+    .comment-text { font-size: 13px; color: var(--ink); line-height: 1.5; }
+    .comment-time { font-size: 11px; color: var(--ink-faint); margin-top: 2px; }
 
     .empty { font-size: 13px; color: var(--ink-faint); padding-left: 16px; }
 
