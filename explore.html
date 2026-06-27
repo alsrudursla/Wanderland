@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Wanderland - 탐험</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=DM+Sans&display=swap">
+  <link rel="stylesheet" href="/styles/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+  <style>
+    .flight-zone.left { left: 0; }
+  </style>
+</head>
+<body>
+  <button class="nav-arrow left" id="plane-back" aria-label="홈으로 가기">✈️</button>
+  <div class="flight-hint left" id="hint-back">비행기를<br>클릭하세요!</div>
+
+  <header>
+    <div class="logo">Wander<span>land</span></div>
+    <p class="tagline">탐험 중...</p>
+  </header>
+
+  <div class="card">
+    <p class="placeholder-text">🗺️ 탐험 지도 준비 중...</p>
+  </div>
+
+  <script>
+    document.getElementById('plane-back').addEventListener('click', (e) => {
+      document.getElementById('hint-back').classList.add('hidden');
+      e.currentTarget.classList.add('flying-left');
+      setTimeout(() => { location.href = '/index.html'; }, 1600);
+    });
+  </script>
+</body>
+</html>

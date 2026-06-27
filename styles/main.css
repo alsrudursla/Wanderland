@@ -49,3 +49,81 @@ header { text-align: center; margin-bottom: 36px; width: 100%; max-width: 380px;
   width: 100%;
   max-width: 380px;
 }
+
+/* 비행기 경로 표시 영역 */
+.nav-arrow {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: #fffaf2;
+  border: 1.5px solid var(--line);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  z-index: 50;
+  font-size: 18px;
+  transition: transform 0.2s, background 0.2s;
+}
+.nav-arrow:hover { background: var(--bg-1); transform: translateY(-50%) scale(1.1); }
+.nav-arrow.right { right: 20px; }
+.nav-arrow.left { left: 20px; }
+
+/* 호버 시 살짝 나타나는 점선 항로 */
+.nav-arrow.right::before {
+  content: '';
+  position: absolute;
+  right: 50px;
+  width: 0;
+  height: 0;
+  border-top: 1.5px dashed var(--ink-faint);
+  transition: width 0.3s;
+}
+.nav-arrow.right:hover::before { width: 30px; }
+
+.nav-arrow.left::before {
+  content: '';
+  position: absolute;
+  left: 50px;
+  width: 0;
+  height: 0;
+  border-top: 1.5px dashed var(--ink-faint);
+  transition: width 0.3s;
+}
+.nav-arrow.left:hover::before { width: 30px; }
+
+/* 클릭하면 버튼 통째로 옆으로 슝 */
+.nav-arrow.flying-right {
+  animation: swooshRight 0.3s ease-in forwards;
+}
+@keyframes swooshRight {
+  0%   { transform: translateY(-50%) translateX(0); opacity: 1; }
+  85%  { opacity: 1; }
+  100% { transform: translateY(-50%) translateX(60px); opacity: 0; }
+}
+.nav-arrow.flying-left {
+  animation: swooshLeft 0.3s ease-in forwards;
+}
+@keyframes swooshLeft {
+  0%   { transform: translateY(-50%) translateX(0); opacity: 1; }
+  85%  { opacity: 1; }
+  100% { transform: translateY(-50%) translateX(-60px); opacity: 0; }
+}
+
+/* 클릭 유도 텍스트 */
+.flight-hint {
+  position: fixed;
+  top: calc(50% - 70px);
+  font-family: 'Nanum Pen Script', cursive;
+  font-size: 16px;
+  color: var(--ink-light);
+  text-align: center;
+  line-height: 1.3;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 50;
+  transition: opacity 0.3s;
+}
+.flight-hint.right { right: 20px; }
+.flight-hint.left  { left: 20px; }
+.flight-hint.hidden { opacity: 0; }

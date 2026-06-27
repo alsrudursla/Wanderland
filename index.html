@@ -335,17 +335,20 @@
 </head>
 <body>
 
+  <button class="nav-arrow right" id="plane-next" aria-label="탐험하러 가기">✈️</button>
+  <div class="flight-hint right" id="hint-next">비행기를<br>클릭하세요!</div>
+
   <header>
-    <img src="/images/wanderland-logo.png" class="logo-img" alt="Wanderland 로고">
-    <div class="logo">Wander<span>land</span></div>
-    <p class="tagline">오늘 카페 어디가지?</p>
-    <div class="header-btns">
-      <button class="icon-btn" onclick="openModal('info-modal')" title="앱 안내">i</button>
-      <a class="icon-btn" href="/dashboard.html" title="대시보드">▦</a>
-      <button class="icon-btn" onclick="openModal('saved-modal')" title="저장한 카페">♡</button>
-      <button class="icon-btn" onclick="openModal('feedback-modal')" title="피드백">✎</button>
-      <button class="icon-btn" onclick="openModal('devnote-modal')" title="개발자 노트">≡</button>
-    </div>
+        <img src="/images/wanderland-logo.png" class="logo-img" alt="Wanderland 로고">
+        <div class="logo">Wander<span>land</span></div>
+        <p class="tagline">오늘 카페 어디가지?</p>
+        <div class="header-btns">
+          <button class="icon-btn" onclick="openModal('info-modal')" title="앱 안내">i</button>
+          <a class="icon-btn" href="/dashboard.html" title="대시보드">▦</a>
+          <button class="icon-btn" onclick="openModal('saved-modal')" title="저장한 카페">♡</button>
+          <button class="icon-btn" onclick="openModal('feedback-modal')" title="피드백">✎</button>
+          <button class="icon-btn" onclick="openModal('devnote-modal')" title="개발자 노트">≡</button>
+        </div>
   </header>
 
   <!-- 인기 디저트 키워드 버블 (배경 장식 + 클릭하면 칩 추가) -->
@@ -353,54 +356,54 @@
   <div class="bubble-zone right" id="bubble-right"></div>
 
   <div class="card">
-    <!-- 섹션 1: 어떤 카페? (기본 칩) -->
-    <p class="section-title">🏷 어떤 카페?</p>
-    <div class="chips" id="type-chips">
-      <span class="chip on"  data-value="카공">카공</span>
-      <span class="chip"     data-value="빵집">빵집</span>
-      <span class="chip"     data-value="조용한">조용한</span>
-      <span class="chip"     data-value="분위기 좋은">분위기</span>
-      <span class="chip"     data-value="데이트">데이트</span>
-      <span class="chip"     data-value="대형">대형</span>
-    </div>
+        <!-- 섹션 1: 어떤 카페? (기본 칩) -->
+        <p class="section-title">🏷 어떤 카페?</p>
+        <div class="chips" id="type-chips">
+          <span class="chip on"  data-value="카공">카공</span>
+          <span class="chip"     data-value="빵집">빵집</span>
+          <span class="chip"     data-value="조용한">조용한</span>
+          <span class="chip"     data-value="분위기 좋은">분위기</span>
+          <span class="chip"     data-value="데이트">데이트</span>
+          <span class="chip"     data-value="대형">대형</span>
+        </div>
 
-    <hr class="divider">
+        <hr class="divider">
 
-    <!-- 섹션 2: 편의 시설 칩 -->
-    <p class="section-title">✏️ 이런 거 있으면 좋겠어</p>
-    <div class="chips" id="feature-chips">
-      <span class="chip accent" data-value="콘센트">콘센트</span>
-      <span class="chip accent" data-value="주차">주차</span>
-      <span class="chip accent" data-value="애견동반">애견</span>
-      <span class="chip accent" data-value="야외석">야외석</span>
-    </div>
+        <!-- 섹션 2: 편의 시설 칩 -->
+        <p class="section-title">✏️ 이런 거 있으면 좋겠어</p>
+        <div class="chips" id="feature-chips">
+          <span class="chip accent" data-value="콘센트">콘센트</span>
+          <span class="chip accent" data-value="주차">주차</span>
+          <span class="chip accent" data-value="애견동반">애견</span>
+          <span class="chip accent" data-value="야외석">야외석</span>
+        </div>
 
-    <hr class="divider">
+        <hr class="divider">
 
-    <!-- 섹션 3: 직접 키워드 입력 → 칩으로 추가 -->
-    <p class="section-title">🔍 직접 추가</p>
-    <div class="keyword-input-row">
-      <input class="keyword-input" id="keyword-input" type="text" placeholder="두쫀쿠, 우베..." maxlength="20">
-      <button class="keyword-add-btn" onclick="addCustomChip()">+ 추가</button>
-    </div>
-    <p class="keyword-hint">엔터로도 추가할 수 있어요</p>
-    <div class="chips" id="custom-chips"></div>
+        <!-- 섹션 3: 직접 키워드 입력 → 칩으로 추가 -->
+        <p class="section-title">🔍 직접 추가</p>
+        <div class="keyword-input-row">
+          <input class="keyword-input" id="keyword-input" type="text" placeholder="두쫀쿠, 우베..." maxlength="20">
+          <button class="keyword-add-btn" onclick="addCustomChip()">+ 추가</button>
+        </div>
+        <p class="keyword-hint">엔터로도 추가할 수 있어요</p>
+        <div class="chips" id="custom-chips"></div>
 
-    <hr class="divider">
-    <button
-      onclick="openModal('location-modal')"
-      style="
-        width:calc(100% - 40px); margin-left:20px; margin-right:20px; margin-bottom:8px; padding:10px;
-        font-family:'Nanum Pen Script',cursive; font-size:18px;
-        background:transparent; color:var(--ink-light);
-        border:1.5px dashed var(--line); border-radius:2px; cursor:pointer;
-      "
-      id="location-display"
-    >
-      📍 다른 위치로 검색
-    </button>
-    <button class="find-btn" onclick="search()">찾아줘 →</button>
-    <p class="error-msg" id="error-msg">위치 권한이 필요해요. 브라우저에서 허용해줘요!</p>
+        <hr class="divider">
+        <button
+          onclick="openModal('location-modal')"
+          style="
+            width:calc(100% - 40px); margin-left:20px; margin-right:20px; margin-bottom:8px; padding:10px;
+            font-family:'Nanum Pen Script',cursive; font-size:18px;
+            background:transparent; color:var(--ink-light);
+            border:1.5px dashed var(--line); border-radius:2px; cursor:pointer;
+          "
+          id="location-display"
+        >
+          📍 다른 위치로 검색
+        </button>
+        <button class="find-btn" onclick="search()">찾아줘 →</button>
+        <p class="error-msg" id="error-msg">위치 권한이 필요해요. 브라우저에서 허용해줘요!</p>
   </div>
 
   <div class="loading" id="loading">
@@ -1370,10 +1373,51 @@
   }
 
   // ─────────────────────────────────────────────
+  // PageNav: 페이지 전환 (홈 ↔ 탐색)
+  // ─────────────────────────────────────────────
+  const PageNav = {
+    current: 0,
+
+    init() {
+      document.getElementById('plane-next').addEventListener('click', (e) => {
+        document.getElementById('hint-next').classList.add('hidden');
+        e.currentTarget.classList.add('flying-right');
+        setTimeout(() => { location.href = '/explore.html'; }, 1600);
+      });
+
+      // 모바일 스와이프
+      let startX = 0;
+      const track = document.getElementById('page-track');
+      track.addEventListener('touchstart', e => { startX = e.touches[0].clientX; });
+      track.addEventListener('touchend', e => {
+        const diff = e.changedTouches[0].clientX - startX;
+        if (diff < -50) this.go(1); // 왼쪽으로 스와이프 → 다음
+        if (diff > 50) this.go(0);  // 오른쪽으로 스와이프 → 이전
+      });
+    },
+
+    // 비행기 모션 먼저 보여주고, 끝나면 실제 화면 전환
+    fly(btn, targetIndex) {
+      btn.classList.add('flying');
+      setTimeout(() => {
+        this.go(targetIndex);
+        btn.classList.remove('flying');
+      }, 400); // 비행 모션 시간과 맞춤
+    },
+
+    go(index) {
+      this.current = index;
+      document.getElementById('nav-next').style.display = index === 0 ? 'flex' : 'none';
+      document.getElementById('nav-prev').style.display = index === 1 ? 'flex' : 'none';
+    }
+  };
+
+  // ─────────────────────────────────────────────
   // 초기화
   // ─────────────────────────────────────────────
   ChipManager.init();
   BubbleManager.init();
+  PageNav.init();
 </script>
 </body>
 <footer class="footer">
