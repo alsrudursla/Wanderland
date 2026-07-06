@@ -329,6 +329,26 @@
       opacity: 0;
     }
 
+    .map-badge-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .map-badge {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700;
+      font-family: 'DM Sans', sans-serif; /* 손글씨체보다 가독성 위해 일반 폰트 */
+      color: #fff;
+      text-decoration: none;
+      transition: transform 0.15s;
+    }
+    .map-badge:hover { transform: scale(1.15); }
+    .map-badge.naver  { background: #03C75A; } /* 네이버 그린 */
+    .map-badge.google { background: #4285F4; } /* 구글 블루 */
+    .map-badge.kakao  { background: #FEE500; color: #3C1E1E; } /* 카카오 옐로우 + 다크텍스트 */
+
     .footer { margin-top: 40px; font-size: 11px; color: var(--ink-faint); text-align: center; opacity: 0.7; }
     .footer a { color: inherit; text-decoration: none; }
   </style>
@@ -434,7 +454,7 @@
 
   <!-- 반경 확장 안내 -->
   <p class="expand-notice" id="expand-notice"></p>
-    <div class="results-wrapper">
+  <div class="results-wrapper">
     <div class="action-bar" id="action-bar">
       <div class="action-bar-item">
         <span class="action-bar-icon">🤍</span>
@@ -448,6 +468,11 @@
       <div class="action-bar-item">
         <span class="action-bar-icon">👎</span>
         <span class="action-bar-label">별로</span>
+      </div>
+      <div class="action-bar-divider"></div>
+      <div class="action-bar-item">
+        <span class="action-bar-icon">🚩</span>
+        <span class="action-bar-label">정복</span>
       </div>
     </div>
     <div class="results" id="results"></div>
@@ -769,6 +794,8 @@
         url:     place.url,
         source:  place.source,
         keywords: place.keywords || [],
+        lat:     place.lat,
+        lng:     place.lng,
         savedAt: new Date().toISOString()
       });
       localStorage.setItem(this.KEY, JSON.stringify(list));
@@ -837,6 +864,11 @@
               data-satisfaction="bad"
               onclick="sendCafeFeedbackFromSaved(event, this)"
             >👎</button>
+            <button
+              class="card-action-btn conquer-btn"
+              title="정복하기"
+              onclick="ConquerManager.conquer(event, '${p.placeId || ''}', '${p.name.replace(/'/g,"\\'")}', ${p.lat}, ${p.lng})"
+            >🚩</button>
             <span style="font-size:11px; color:var(--ink-faint); margin-left:4px;">다녀오셨나요?</span>
           </div>
         </div>
@@ -1011,6 +1043,18 @@
   };
 
   // ─────────────────────────────────────────────
+  // MapLinks: 네이버/카카오/구글 지도앱 선택해서 열기
+  // ─────────────────────────────────────────────
+  const MapLinks = {
+    naver(lat, lng, name) {
+      return `https://map.naver.com/p/search/${encodeURIComponent(name)}`;
+    },
+    kakao(lat, lng, name) {
+      return `https://map.kakao.com/?q=${encodeURIComponent(name)}`;
+    }
+  };
+
+  // ─────────────────────────────────────────────
   // Renderer: 결과 카드 렌더링
   // ─────────────────────────────────────────────
   const Renderer = {
@@ -1043,15 +1087,6 @@
         const card = document.createElement('div');
         card.className = 'result-card';
         card.style.animationDelay = `${i * 0.05}s`;
-        card.innerHTML = `
-          <div class="result-name">${name}</div>
-          <div class="result-meta">${[dist, rating, address].filter(Boolean).join(' · ')}</div>
-          <div class="result-tags">
-            ${sourceTag} ${openTag}
-            ${keywords.map(k => `<span class="tag">${k}</span>`).join('')}
-          </div>
-          <div class="map-hint">지도에서 보기 →</div>
-        `;
 
         const isSaved = SaveManager.isSaved(name, address);
 
@@ -1072,6 +1107,8 @@
                 data-url="${url}"
                 data-source="${place.source || 'google'}"
                 data-keywords="${ChipManager.getAllKeywords().join(',')}"
+                data-lat="${place.location?.latitude || 0}"
+                data-lng="${place.location?.longitude || 0}"
                 onclick="toggleSaveFromCard(event, this)"
               >${isSaved ? '🧡' : '🤍'}</button>
               <button
@@ -1084,8 +1121,18 @@
                 title="별로였어요"
                 onclick="sendCafeFeedback(event, this, '${name.replace(/'/g,"\\'")}', '${address.replace(/'/g,"\\'")}', '${place.source}', 'bad')"
               >👎</button>
+              <button
+                class="card-action-btn conquer-btn"
+                title="정복하기"
+                onclick="ConquerManager.conquer(event, '${name.replace(/'/g,"\\'")}', '${address.replace(/'/g,"\\'")}', ${place.location?.latitude || 0}, ${place.location?.longitude || 0})"
+              >🚩</button>
             </div>
-          <div class="map-hint">지도에서 보기 →</div>
+            <div class="map-badge-row">
+              <a class="map-badge naver"  href="${MapLinks.naver(place.location?.latitude || 0, place.location?.longitude || 0, name)}" target="_blank" onclick="event.stopPropagation()">N</a>
+              <a class="map-badge google" href="${url}" target="_blank" onclick="event.stopPropagation()">G</a>
+              <a class="map-badge kakao"  href="${MapLinks.kakao(place.location?.latitude || 0, place.location?.longitude || 0, name)}" target="_blank" onclick="event.stopPropagation()">K</a>
+            </div>
+          </div>
         `;
 
         card.onclick = () => window.open(url, '_blank');
@@ -1376,39 +1423,30 @@
   // PageNav: 페이지 전환 (홈 ↔ 탐색)
   // ─────────────────────────────────────────────
   const PageNav = {
-    current: 0,
-
     init() {
       document.getElementById('plane-next').addEventListener('click', (e) => {
         document.getElementById('hint-next').classList.add('hidden');
         e.currentTarget.classList.add('flying-right');
         setTimeout(() => { location.href = '/explore.html'; }, 1600);
       });
-
-      // 모바일 스와이프
-      let startX = 0;
-      const track = document.getElementById('page-track');
-      track.addEventListener('touchstart', e => { startX = e.touches[0].clientX; });
-      track.addEventListener('touchend', e => {
-        const diff = e.changedTouches[0].clientX - startX;
-        if (diff < -50) this.go(1); // 왼쪽으로 스와이프 → 다음
-        if (diff > 50) this.go(0);  // 오른쪽으로 스와이프 → 이전
-      });
     },
+  };
 
-    // 비행기 모션 먼저 보여주고, 끝나면 실제 화면 전환
-    fly(btn, targetIndex) {
-      btn.classList.add('flying');
-      setTimeout(() => {
-        this.go(targetIndex);
-        btn.classList.remove('flying');
-      }, 400); // 비행 모션 시간과 맞춤
-    },
+  // ─────────────────────────────────────────────
+  // ConquerManager: 카페 정복 기능
+  // ─────────────────────────────────────────────
+  const ConquerManager = {
+    conquer(event, name, address, lat, lng) {
+      event.stopPropagation(); // 카드 전체 클릭(구글맵 열기) 안 따라오게
 
-    go(index) {
-      this.current = index;
-      document.getElementById('nav-next').style.display = index === 0 ? 'flex' : 'none';
-      document.getElementById('nav-prev').style.display = index === 1 ? 'flex' : 'none';
+      const comment = prompt(`"${name}" 한 줄로 어땠어요? (선택)`) || '';
+      const tagsInput = prompt('태그 (쉼표로 구분, 예: 조용함, 콘센트많음)') || '';
+      const tags = tagsInput.split(',').map(t => t.trim()).filter(Boolean);
+
+      // TODO: Supabase 연동 전까지는 콘솔 확인만
+      console.log('정복 기록:', { name, lat, lng, comment, tags });
+
+      alert('🚩 정복 완료!');
     }
   };
 
